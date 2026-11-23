@@ -240,7 +240,7 @@ $("#app").addEventListener("pointerup",async()=>{
 });
 
 /* Démarrage : Supabase */
-const SUPABASE_URL='https://wwyhledcqcowhjqftxsj.supabase.co/rest/v1/',SUPABASE_KEY='sb_publishable__-ll0b2uuMRHelt1uGTJrA_-vtwk49P';
+const SUPABASE_URL='https://VOTRE-PROJET.supabase.co',SUPABASE_KEY='VOTRE_CLE_PUBLIQUE';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const wrap=r=>({docs:r.map(x=>({id:x.id,data:()=>x.data}))});
 db={
@@ -262,7 +262,7 @@ $('#dev').addEventListener('click',async e=>{
   if(e.target.dataset.o)await sb.auth.signOut()});
 $('#lf').addEventListener('submit',async e=>{e.preventDefault();
   const{error}=await sb.auth.signInWithPassword({email:$('#le').value,password:$('#lp').value});
-  if(error)alert('Connexion refusée');else $('#lf').style.display='none'});
+  if(error)alert('Connexion refusée : '+error.message);else $('#lf').style.display='none'});
 (async()=>{
   try{
     let id=localStorage.getItem('u');if(!id){id=crypto.randomUUID();localStorage.setItem('u',id)}
