@@ -240,7 +240,7 @@ $("#app").addEventListener("pointerup",async()=>{
 });
 
 /* Démarrage : Supabase */
-const SUPABASE_URL='https://wwyhledcqcowhjqftxsj.supabase.co/rest/v1/',SUPABASE_KEY='sb_publishable__-ll0b2uuMRHelt1uGTJrA_-vtwk49P';
+const SUPABASE_URL='https://wwyhledcqcowhjqftxsj.supabase.co',SUPABASE_KEY='sb_publishable__-ll0b2uuMRHelt1uGTJrA_-vtwk49P';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const wrap=r=>({docs:r.map(x=>({id:x.id,data:()=>x.data}))});
 db={
