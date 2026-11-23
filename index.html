@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blocs du club</title>
+<style>
+:root{--bg:#f6f5f2;--fg:#1d1d1b;--card:#fff;--mut:#7a7a74;--ac:#e8590c;--bd:#e2e0da;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161615;--fg:#f1f0ec;--card:#222221;--mut:#9a9a92;--bd:#34342f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#161615;--fg:#f1f0ec;--card:#222221;--mut:#9a9a92;--bd:#34342f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd);background:var(--card)}
+h1{font-size:18px;margin:0}
+main{max-width:920px;margin:0 auto;padding:14px}
+.badge{font-size:12px;background:var(--ac);color:#fff;border-radius:99px;padding:2px 10px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+button,.btn{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:10px;padding:9px 14px;cursor:pointer}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff}
+button.on{outline:2px solid var(--ac)}
+button.dg{color:#d92d20}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.mut{color:var(--mut);font-size:14px}
+input,select{font:inherit;padding:9px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--fg);max-width:100%}
+.pl{width:100%;background:var(--card);border:1px solid var(--bd);border-radius:12px;touch-action:none}
+.pl rect.s{fill:var(--bg);stroke:var(--ac);stroke-width:.5}
+.pl text{fill:var(--fg);font-size:3px;pointer-events:none}
+.ph{position:relative;border-radius:12px;overflow:hidden;line-height:0;touch-action:manipulation;background:#888}
+.ph img{width:100%;display:block;user-select:none;-webkit-user-drag:none}
+.d{position:absolute;width:28px;height:28px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.12)}
+.d.on{border-width:5px;background:rgba(255,255,255,.2)}
+.pr{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}
+.pr.sel{outline:2px solid var(--ac)}
+.g{font-weight:700;color:var(--ac)}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.ph.no{padding:40px;text-align:center;color:#fff;line-height:1.4}
+.ov{position:absolute;inset:0;width:100%;height:100%}
+.ov polygon{fill:rgba(255,255,255,.12);stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:all;cursor:pointer}
+.ov polygon.c{stroke:#fbbf24;stroke-dasharray:4 3;fill:rgba(251,191,36,.2)}
+</style>
+</head>
+<body>
+<header><h1>🧗 Blocs du club</h1><span id="dev"></span></header>
+<form id="lf" style="display:none;gap:8px;flex-wrap:wrap;padding:8px 16px"><input id="le" type="email" placeholder="Email" autocomplete="username"><input id="lp" type="password" placeholder="Mot de passe" autocomplete="current-password"><button class="p">Connexion</button></form>
+<main id="app"><p class="mut">Chargement…</p></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const COL={start:"#22c55e",hand:"#3b82f6",foot:"#eab308",finish:"#ef4444"};
+const LBL={start:"Départ",hand:"Main",foot:"Pied",finish:"Fin"};
+const GR=["4","5","5+","6A","6A+","6B","6B+","6C","6C+","7A","7A+","7B","7B+","7C"];
+let db=null,user=null,assets=null,isDev=false,me={id:null,name:"Anonyme"};
+let S=[],H=[],P=[],msg="Chargement…",ready=false;
+let v={n:"home",tab:"plan",sid:null,pid:null,edit:false,cr:null,tool:"hand",sens:45,cand:null,note:""};
+const snap=q=>q.docs.map(d=>Object.assign({id:d.id},d.data()));
+
+function home(){
+  let h=`<div class="tabs"><button class="${v.tab==="plan"?"on":""}" data-a="tab" data-t="plan">Plan</button><button class="${v.tab==="list"?"on":""}" data-a="tab" data-t="list">Tous les blocs</button></div>`;
+  if(v.tab==="plan"){
+    if(!S.length) h+=`<p class="mut">Aucun secteur pour l’instant.${isDev?" Ajoute-en un ci-dessous.":""}</p>`;
+    h+=`<svg id="plan" class="pl" viewBox="0 0 100 64">`+S.map(s=>`<g data-s="${s.id}" transform="translate(${s.px},${s.py})" style="cursor:pointer"><rect class="s" width="${s.pw}" height="${s.ph}" rx="1.5"/><text x="2" y="6">${esc(s.name)}</text><text x="2" y="${s.ph-2.5}" style="font-size:2.4px;fill:var(--mut)">${P.filter(p=>p.sid===s.id).length} blocs</text></g>`).join("")+`</svg>`;
+    h+=`<p class="mut">${isDev?"Mode développeur : glisse les secteurs pour composer le plan, touche-en un pour l’ouvrir.":"Touche un secteur pour voir ses blocs."}</p>`;
+    if(isDev) h+=`<div class="card"><b>Nouveau secteur</b><div class="row"><input id="sn" placeholder="Nom du secteur"><input id="sf" type="file" accept="image/*"><button class="p" data-a="addS">Ajouter</button></div><div class="mut" id="st"></div></div>`;
+  } else {
+    const l=[...P].sort((a,b)=>b.t-a.t);
+    h+=l.length?l.map(p=>{const s=S.find(x=>x.id===p.sid);return `<div class="card pr" data-a="open" data-s="${p.sid}" data-p="${p.id}"><div><b>${esc(p.name)}</b><div class="mut">${esc(s?s.name:"?")} · par ${esc(p.by)}</div></div><span class="g">${esc(p.grade)}</span></div>`}).join(""):`<p class="mut">Aucun bloc ouvert pour l’instant.</p>`;
+  }
+  return h;
+}
+
+function photo(s){
+  if(!s.img) return `<div class="ph no">Pas de photo pour ce secteur</div>`;
+  const sel=v.cr?v.cr.sel:(v.pid?((P.find(p=>p.id===v.pid)||{}).holds||{}):{});
+  const hs=H.filter(h=>h.sid===s.id),sh=v.edit||v.cr;
+  const pg=hs.filter(h=>h.p&&(sel[h.id]||sh)).map(h=>{const r=sel[h.id];return `<polygon data-a='hold' data-id='${h.id}' points='${h.p}' style='${r?`stroke:${COL[r]};fill:${COL[r]}55;stroke-width:3`:''}'/>`}).join('');
+  const cd=(v.cand||[]).map((c,i)=>`<polygon class='c' data-a='cand' data-i='${i}' points='${c.p}'/>`).join('');
+  const d=hs.filter(h=>!h.p).map(h=>{const r=sel[h.id];if(!r&&!v.edit&&!v.cr)return"";
+    return `<i class="d${r?" on":""}" data-a="hold" data-id="${h.id}" style="left:${h.x}%;top:${h.y}%;${r?"border-color:"+COL[r]:""}"></i>`}).join("");
+  return `<div class="ph" data-a="img"><img src="${esc(s.img)}" alt="${esc(s.name)}"><svg class='ov' viewBox='0 0 100 100' preserveAspectRatio='none'>${pg}${cd}</svg>${d}</div>`;
+}
+const legend=()=>`<div class="leg mut">${Object.keys(COL).map(k=>`<span style="margin-right:10px"><i style="background:${COL[k]}"></i>${LBL[k]}</span>`).join("")}</div>`;
+
+function sector(){
+  const s=S.find(x=>x.id===v.sid); if(!s){v.n="home";return home()}
+  let h=`<div class="row"><button data-a="back">← Plan</button><b style="font-size:18px">${esc(s.name)}</b></div>`;
+  h+=photo(s);
+  if(v.cr){
+    const c=v.cr;
+    h+=legend()+`<div class="row">`+Object.keys(COL).map(k=>`<button class="${v.tool===k?"on":""}" data-a="tool" data-t="${k}" style="border-color:${COL[k]}">${LBL[k]}</button>`).join("")+`</div>`;
+    h+=`<p class="mut">Choisis un type, puis touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p>`;
+    h+=`<div class="row"><input id="bn" placeholder="Nom du bloc" value="${esc(c.name)}"><select id="bg">${GR.map(g=>`<option${g===c.grade?" selected":""}>${g}</option>`).join("")}</select></div><div class="row"><button class="p" data-a="save">Enregistrer le bloc</button><button data-a="cancel">Annuler</button></div>`;
+  } else {
+    h+=`<div class="row"><button class="p" data-a="new">+ Nouveau bloc</button>${isDev?`<button class="${v.edit?"on":""}" data-a="edit">${v.edit?"Terminer l’édition":"Éditer les prises"}</button><label class="btn">Changer la photo<input id="rf" type="file" accept="image/*" hidden></label><button class="dg" data-a="delS">Supprimer</button>`:""}</div>`;
+    if(v.edit){const n=(v.cand||[]).length;h+=`<div class='row'><button data-a='detect'>Détecter les prises</button><label class='mut'>Sensibilité <input id='sens' type='range' min='15' max='90' value='${v.sens}'></label>${n?`<button class='p' data-a='valid'>Valider ${n} prises</button><button data-a='clr'>Effacer</button>`:''}</div><p class='mut'>Touche la photo pour détourer une prise, touche une prise pour la supprimer${n?', touche un contour jaune pour l’écarter':''}. ${H.filter(x=>x.sid===s.id).length} prise(s) fixée(s).</p><div class='mut' id='st'>${esc(v.note||'')}</div>`}
+    else if(v.pid) h+=legend();
+    const l=P.filter(p=>p.sid===s.id).sort((a,b)=>b.t-a.t);
+    h+=l.length?l.map(p=>`<div class="card pr${v.pid===p.id?" sel":""}" data-a="pick" data-p="${p.id}"><div><b>${esc(p.name)}</b><div class="mut">par ${esc(p.by)} · ${Object.keys(p.holds||{}).length} prises</div></div><div class="row" style="margin:0"><span class="g">${esc(p.grade)}</span>${isDev||p.uid===me.id?`<button class="dg" data-a="delP" data-p="${p.id}">✕</button>`:""}</div></div>`).join(""):`<p class="mut">Aucun bloc ici pour l’instant : crée le premier !</p>`;
+  }
+  return h;
+}
+
+function render(){
+  const a=$("#app");
+  if(!ready){a.innerHTML=`<p class="mut">${esc(msg)}</p>`;return}
+  const active=document.activeElement;
+  if(active&&(active.id==="bn"||active.id==="sn"))return;
+  a.innerHTML=v.n==="home"?home():sector();
+}
+async function img(f){const b=await createImageBitmap(f),k=Math.min(1,1800/b.width),c=document.createElement("canvas");c.width=b.width*k;c.height=b.height*k;c.getContext("2d").drawImage(b,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,"image/jpeg",.85))}
+async function up(f,st){if(!assets){st.textContent="Import d’images indisponible.";return null}st.textContent="Envoi de la photo…";try{const r=await assets.upload(await img(f));st.textContent="";return r.url}catch(e){st.textContent="Échec : "+(e.message||e.code);return null}}
+
+const A={
+  tab:e=>{v.tab=e.dataset.t},
+  back:()=>{v.n="home";v.pid=null;v.edit=false;v.cand=null},
+  open:e=>{v.n="sector";v.sid=e.dataset.s;v.pid=e.dataset.p||null},
+  pick:e=>{v.pid=v.pid===e.dataset.p?null:e.dataset.p},
+  new:()=>{v.cr={sel:{},name:"",grade:"5"};v.pid=null;v.edit=false},
+  cancel:()=>{v.cr=null},
+  tool:e=>{v.tool=e.dataset.t},
+  edit:()=>{v.edit=!v.edit;v.cand=null;v.note=''},
+  detect:async()=>{v.note='Analyse…';render();await new Promise(r=>setTimeout(r,30));v.cand=await detect()},
+  cand:e=>{v.cand.splice(+e.dataset.i,1)},
+  clr:()=>{v.cand=null;v.note=''},
+  valid:async()=>{const ex=H.filter(h=>h.sid===v.sid),nw=v.cand.filter(c=>!ex.some(h=>Math.hypot(h.x-c.x,h.y-c.y)<2));v.cand=null;v.note=nw.length+' prises ajoutées.';await Promise.all(nw.map(c=>db.collection('holds').add({sid:v.sid,x:c.x,y:c.y,p:c.p})))},
+  hold:async e=>{const id=e.dataset.id;
+    if(v.cr){if(v.cr.sel[id]===v.tool)delete v.cr.sel[id];else v.cr.sel[id]=v.tool}
+    else if(v.edit&&isDev){await db.doc("holds/"+id).delete();return}},
+  save:async()=>{const c=v.cr;if(me.name==='Anonyme'){me.name=(prompt('Ton prénom ?')||'Anonyme').slice(0,30);try{localStorage.setItem('n',me.name)}catch(e){}}if(!Object.keys(c.sel).length){alert("Ajoute au moins une prise.");return}
+    const r={sid:v.sid,name:c.name.trim()||"Sans nom",grade:c.grade,by:me.name,uid:me.id,holds:c.sel,t:Date.now()};
+    v.cr=null;await db.collection("problems").add(r)},
+  delP:async e=>{e.stopPropagation&&0;await db.doc("problems/"+e.dataset.p).delete();if(v.pid===e.dataset.p)v.pid=null},
+  delS:async()=>{if(!confirm("Supprimer ce secteur, ses prises et ses blocs ?"))return;const sid=v.sid;v.n="home";
+    await Promise.all([db.doc("sectors/"+sid).delete(),...H.filter(h=>h.sid===sid).map(h=>db.doc("holds/"+h.id).delete()),...P.filter(p=>p.sid===sid).map(p=>db.doc("problems/"+p.id).delete())])},
+  addS:async()=>{const n=$("#sn").value.trim(),f=$("#sf").files[0],st=$("#st");if(!n||!f){st.textContent="Nom et photo requis.";return}
+    const u=await up(f,st);if(!u)return;const i=S.length;
+    await db.collection("sectors").add({name:n,img:u,px:2+(i%3)*33,py:2+Math.floor(i/3)*20,pw:30,ph:16});$("#sn").value=""}
+};
+$("#app").addEventListener("click",async e=>{
+  const t=e.target.closest("[data-a]");if(!t||!ready)return;
+  const a=t.dataset.a;
+  if(a==="img"){if(v.edit&&isDev){const r=t.getBoundingClientRect(),x=Math.round((e.clientX-r.left)/r.width*1000)/10,y=Math.round((e.clientY-r.top)/r.height*1000)/10;await addHold(x,y)}return}
+  if(a==="delP")e.stopPropagation();
+  if(A[a]){await A[a](t);render()}
+});
+$("#app").addEventListener("input",e=>{if(e.target.id==="sens")v.sens=+e.target.value;if(!v.cr)return;if(e.target.id==="bn")v.cr.name=e.target.value;if(e.target.id==="bg")v.cr.grade=e.target.value});
+$("#app").addEventListener("change",async e=>{
+  if(e.target.id!=="rf"||!e.target.files[0])return;
+  const u=await up(e.target.files[0],$("#st")||{});if(u)await db.doc("sectors/"+v.sid).update({img:u})});
+
+/* Détection et détourage des prises */
+const PX={};
+async function pix(s){
+  if(PX[s.id]&&PX[s.id].u===s.img)return PX[s.id];
+  const src=s.img.includes('/_blob/')?'/_blob/'+s.img.split('/_blob/')[1]:s.img;
+  const im=new Image();im.crossOrigin='anonymous';im.src=src;await im.decode();
+  const k=Math.min(1,700/im.naturalWidth),w=Math.round(im.naturalWidth*k),h=Math.round(im.naturalHeight*k);
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);
+  return PX[s.id]={u:s.img,w,h,d:x.getImageData(0,0,w,h).data};
+}
+// contour = 32 rayons depuis le centre, médiane sur 3 voisins
+function outline(m,w,h,cx,cy){
+  const N=32,R=[];
+  for(let a=0;a<N;a++){const t=a*2*Math.PI/N,dx=Math.cos(t),dy=Math.sin(t);let r=0,miss=0;
+    for(let s=1;s<w;s++){const x=Math.round(cx+dx*s),y=Math.round(cy+dy*s);
+      if(x<0||y<0||x>=w||y>=h||!m[y*w+x]){if(++miss>2)break}else{miss=0;r=s}}
+    R.push(r)}
+  return R.map((_,a)=>{const r=Math.max(1.5,[R[(a+N-1)%N],R[a],R[(a+1)%N]].sort((u,z)=>u-z)[1]+.5),t=a*2*Math.PI/N;
+    return ((cx+Math.cos(t)*r)/w*100).toFixed(1)+','+((cy+Math.sin(t)*r)/h*100).toFixed(1)}).join(' ');
+}
+// baguette magique : région de couleur proche du point touché
+function wand(P,sx,sy,tol){
+  const w=P.w,h=P.h,d=P.d;let r=0,g=0,b=0,n=0;
+  for(let y=sy-2;y<=sy+2;y++)for(let x=sx-2;x<=sx+2;x++)if(x>=0&&y>=0&&x<w&&y<h){const i=(y*w+x)*4;r+=d[i];g+=d[i+1];b+=d[i+2];n++}
+  r/=n;g/=n;b/=n;
+  for(let t=tol,k=0;k<4;k++,t*=.75){
+    const m=new Uint8Array(w*h),st=[sy*w+sx];m[st[0]]=1;let c=0,sxm=0,sym=0,ok=true;
+    while(st.length){const p=st.pop(),x=p%w,y=(p/w)|0;c++;sxm+=x;sym+=y;if(c>w*h*.05){ok=false;break}
+      const nb=[];if(x>0)nb.push(p-1);if(x<w-1)nb.push(p+1);if(y>0)nb.push(p-w);if(y<h-1)nb.push(p+w);
+      for(const q of nb)if(!m[q]){const i=q*4;if(Math.hypot(d[i]-r,d[i+1]-g,d[i+2]-b)<=t){m[q]=1;st.push(q)}}}
+    if(ok&&c>=12)return{m,cx:sxm/c,cy:sym/c};
+  }
+  return null;
+}
+async function addHold(x,y){
+  const s=S.find(z=>z.id===v.sid);let p='';
+  try{const P=await pix(s),r=wand(P,Math.round(x/100*(P.w-1)),Math.round(y/100*(P.h-1)),40);
+    if(r){p=outline(r.m,P.w,P.h,r.cx,r.cy);x=Math.round(r.cx/P.w*1000)/10;y=Math.round(r.cy/P.h*1000)/10}else v.note='Contour non trouvé : prise ajoutée sans contour.'}
+  catch(e){v.note='Détourage impossible : prise ajoutée sans contour.'}
+  await db.collection('holds').add(p?{sid:s.id,x,y,p}:{sid:s.id,x,y});
+}
+// détection automatique : tout ce qui diffère de la couleur dominante du mur
+async function detect(){
+  const s=S.find(z=>z.id===v.sid);
+  try{
+    const P=await pix(s),w=P.w,h=P.h,d=P.d,hs=new Uint32Array(4096);
+    for(let i=0;i<d.length;i+=4)hs[(d[i]>>4<<8)|(d[i+1]>>4<<4)|(d[i+2]>>4)]++;
+    let bi=0;for(let i=1;i<4096;i++)if(hs[i]>hs[bi])bi=i;
+    const br=((bi>>8)&15)*16+8,bg=((bi>>4)&15)*16+8,bb=(bi&15)*16+8,t=105-v.sens;
+    const m=new Uint8Array(w*h),vis=new Uint8Array(w*h),sc=new Uint8Array(w*h),out=[];
+    for(let i=0;i<w*h;i++)if(Math.hypot(d[i*4]-br,d[i*4+1]-bg,d[i*4+2]-bb)>t)m[i]=1;
+    for(let i=0;i<w*h&&out.length<300;i++){
+      if(!m[i]||vis[i])continue;
+      const st=[i],px=[];vis[i]=1;let x0=w,x1=0,y0=h,y1=0,sx=0,sy=0;
+      while(st.length){const p=st.pop(),x=p%w,y=(p/w)|0;px.push(p);sx+=x;sy+=y;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+        const nb=[];if(x>0)nb.push(p-1);if(x<w-1)nb.push(p+1);if(y>0)nb.push(p-w);if(y<h-1)nb.push(p+w);
+        for(const q of nb)if(m[q]&&!vis[q]){vis[q]=1;st.push(q)}}
+      const a=px.length,bw=x1-x0+1,bh=y1-y0+1;
+      if(a<w*h*.0003||a>w*h*.03||Math.max(bw,bh)>4*Math.min(bw,bh)||a<.3*bw*bh||x0==0||y0==0||x1==w-1||y1==h-1)continue;
+      px.forEach(p=>sc[p]=1);const cx=sx/a,cy=sy/a;
+      out.push({x:Math.round(cx/w*1000)/10,y:Math.round(cy/h*1000)/10,p:outline(sc,w,h,cx,cy)});
+      px.forEach(p=>sc[p]=0);
+    }
+    v.note=out.length?out.length+' prises détectées : écarte les erreurs puis valide.':'Aucune prise détectée : essaie une autre sensibilité.';
+    return out;
+  }catch(e){v.note='Analyse impossible : '+(e.message||e);return null}
+}
+
+/* Plan : glisser-déposer des secteurs (mode développeur) */
+let dr=null;
+function pt(svg,e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
+$("#app").addEventListener("pointerdown",e=>{
+  const g=e.target.closest("g[data-s]");if(!g||!ready)return;
+  const svg=$("#plan"),s=S.find(x=>x.id===g.dataset.s),p=pt(svg,e);
+  dr={g,s,svg,ox:p.x-s.px,oy:p.y-s.py,x:s.px,y:s.py,moved:false};
+  if(isDev)svg.setPointerCapture(e.pointerId);
+});
+$("#app").addEventListener("pointermove",e=>{
+  if(!dr||!isDev)return;const p=pt(dr.svg,e);
+  const x=Math.max(0,Math.min(100-dr.s.pw,p.x-dr.ox)),y=Math.max(0,Math.min(64-dr.s.ph,p.y-dr.oy));
+  if(Math.abs(x-dr.s.px)+Math.abs(y-dr.s.py)>1)dr.moved=true;
+  dr.x=x;dr.y=y;dr.g.setAttribute("transform",`translate(${x},${y})`);
+});
+$("#app").addEventListener("pointerup",async()=>{
+  if(!dr)return;const d=dr;dr=null;
+  if(d.moved){await db.doc("sectors/"+d.s.id).update({px:Math.round(d.x*10)/10,py:Math.round(d.y*10)/10})}
+  else{v.n="sector";v.sid=d.s.id;v.pid=null;render()}
+});
+
+/* Démarrage : Supabase */
+const SUPABASE_URL='https://wwyhledcqcowhjqftxsj.supabase.co/rest/v1/',SUPABASE_KEY='sb_publishable__-ll0b2uuMRHelt1uGTJrA_-vtwk49P';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const wrap=r=>({docs:r.map(x=>({id:x.id,data:()=>x.data}))});
+db={
+  collection:c=>({
+    add:async d=>{const{error}=await sb.from('kv').insert({coll:c,data:d});if(error){alert('Refusé : '+error.message);throw error}},
+    onSnapshot:(cb,er)=>{const load=async()=>{const{data,error}=await sb.from('kv').select('id,data').eq('coll',c);error?er&&er(error):cb(wrap(data))};load();
+      sb.channel('r-'+c).on('postgres_changes',{event:'*',schema:'public',table:'kv',filter:'coll=eq.'+c},load).subscribe();setInterval(load,20000)}
+  }),
+  doc:p=>{const id=p.split('/')[1];return{
+    update:async d=>{const{data}=await sb.from('kv').select('data').eq('id',id).single();const{error}=await sb.from('kv').update({data:{...data.data,...d}}).eq('id',id);if(error)throw error},
+    delete:async()=>{const{error}=await sb.from('kv').delete().eq('id',id);if(error)throw error}}}
+};
+assets={upload:async b=>{const n=Date.now()+'-'+Math.random().toString(36).slice(2)+'.jpg';
+  const{error}=await sb.storage.from('photos').upload(n,b,{contentType:'image/jpeg'});if(error)throw error;
+  return{url:sb.storage.from('photos').getPublicUrl(n).data.publicUrl}}};
+function badge(){$('#dev').innerHTML=isDev?'<span class="badge">Développeur</span> <button data-o="1" style="font-size:12px;padding:4px 10px">Quitter</button>':'<button data-l="1" style="font-size:12px;padding:4px 10px">Dev</button>'}
+$('#dev').addEventListener('click',async e=>{
+  if(e.target.dataset.l){const f=$('#lf');f.style.display=f.style.display==='none'?'flex':'none'}
+  if(e.target.dataset.o)await sb.auth.signOut()});
+$('#lf').addEventListener('submit',async e=>{e.preventDefault();
+  const{error}=await sb.auth.signInWithPassword({email:$('#le').value,password:$('#lp').value});
+  if(error)alert('Connexion refusée');else $('#lf').style.display='none'});
+(async()=>{
+  try{
+    let id=localStorage.getItem('u');if(!id){id=crypto.randomUUID();localStorage.setItem('u',id)}
+    me={id,name:localStorage.getItem('n')||'Anonyme'};
+  }catch(e){me={id:'anon-'+Math.random(),name:'Anonyme'}}
+  isDev=!!(await sb.auth.getSession()).data.session;badge();
+  sb.auth.onAuthStateChange((_,x)=>{isDev=!!x;if(!isDev){v.edit=false;v.cand=null}badge();render()});
+  ready=true;
+  const er=e=>{msg='Erreur de chargement des données.';console.error(e)};
+  db.collection('sectors').onSnapshot(q=>{S=snap(q);render()},er);
+  db.collection('holds').onSnapshot(q=>{H=snap(q);render()},er);
+  db.collection('problems').onSnapshot(q=>{P=snap(q);render()},er);
+  render();
+})();
+</script>
+</body>
+</html>
