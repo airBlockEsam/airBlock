@@ -38,7 +38,7 @@ input,select{font:inherit;padding:9px;border:1px solid var(--bd);border-radius:1
 .ph.no{padding:40px;text-align:center;color:#fff;line-height:1.4}
 .ov{position:absolute;inset:0;width:100%;height:100%}
 .ov polygon{fill:rgba(255,255,255,.12);stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:all;cursor:pointer}
-.ov polygon.c{stroke:#fbbf24;stroke-dasharray:4 3;fill:rgba(251,191,36,.2)}\n.ov polyline{pointer-events:none}.ov circle{pointer-events:none}
+.ov polygon.c{stroke:#fbbf24;stroke-dasharray:4 3;fill:rgba(251,191,36,.2)}
 </style>
 </head>
 <body>
@@ -49,14 +49,12 @@ input,select{font:inherit;padding:9px;border:1px solid var(--bd);border-radius:1
 <script>
 const $=s=>document.querySelector(s);
 const esc=t=>String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const COL={vert:"#22a447",orange:"#f28c28",bleu:"#2675d8",blanc:"#f5f5f5",noir:"#242424",violet:"#873cc7"};
-const LBL={vert:"Vert",orange:"Orange",bleu:"Bleu",blanc:"Blanc",noir:"Noir",violet:"Violet"};
-const GR=["Vert","Orange","Bleu","Blanc","Noir","Violet"];
-const gradeColor=g=>COL[String(g||"").toLowerCase()]||"var(--ac)";
-const gradeHtml=g=>`<span class="g" style="color:${gradeColor(g)};border:1px solid ${gradeColor(g)};border-radius:99px;padding:3px 9px">${esc(g)}</span>`;
+const COL={start:"#22c55e",hand:"#3b82f6",foot:"#eab308",finish:"#ef4444"};
+const LBL={start:"Départ",hand:"Main",foot:"Pied",finish:"Fin"};
+const GR=["4","5","5+","6A","6A+","6B","6B+","6C","6C+","7A","7A+","7B","7B+","7C"];
 let db=null,user=null,assets=null,isDev=false,me={id:null,name:"Anonyme"};
 let S=[],H=[],P=[],msg="Chargement…",ready=false;
-let v={n:"home",tab:"plan",sid:null,pid:null,edit:false,cr:null,tool:"vert",sens:45,cand:null,note:"",manual:false,manualPts:[]};
+let v={n:"home",tab:"plan",sid:null,pid:null,edit:false,cr:null,tool:"hand",sens:45,cand:null,note:""};
 const snap=q=>q.docs.map(d=>Object.assign({id:d.id},d.data()));
 
 function home(){
@@ -65,10 +63,10 @@ function home(){
     if(!S.length) h+=`<p class="mut">Aucun secteur pour l’instant.${isDev?" Ajoute-en un ci-dessous.":""}</p>`;
     h+=`<svg id="plan" class="pl" viewBox="0 0 100 64">`+S.map(s=>`<g data-s="${s.id}" transform="translate(${s.px},${s.py})" style="cursor:pointer"><rect class="s" width="${s.pw}" height="${s.ph}" rx="1.5"/><text x="2" y="6">${esc(s.name)}</text><text x="2" y="${s.ph-2.5}" style="font-size:2.4px;fill:var(--mut)">${P.filter(p=>p.sid===s.id).length} blocs</text></g>`).join("")+`</svg>`;
     h+=`<p class="mut">${isDev?"Mode développeur : glisse les secteurs pour composer le plan, touche-en un pour l’ouvrir.":"Touche un secteur pour voir ses blocs."}</p>`;
-    if(isDev) h+=`<div class="card"><b>Ajouter un mur</b><div class="row"><input id="sf" type="file" accept="image/*"><button class="p" data-a="addS">Ajouter la photo</button></div><div class="mut" id="st"></div></div>`;
+    if(isDev) h+=`<div class="card"><b>Nouveau secteur</b><div class="row"><input id="sn" placeholder="Nom du secteur"><input id="sf" type="file" accept="image/*"><button class="p" data-a="addS">Ajouter</button></div><div class="mut" id="st"></div></div>`;
   } else {
     const l=[...P].sort((a,b)=>b.t-a.t);
-    h+=l.length?l.map(p=>{const s=S.find(x=>x.id===p.sid);return `<div class="card pr" data-a="open" data-s="${p.sid}" data-p="${p.id}"><div><b>${esc(p.name)}</b><div class="mut">${esc(s?s.name:"?")} · par ${esc(p.by)}</div></div>${gradeHtml(p.grade)}</div>`}).join(""):`<p class="mut">Aucun bloc ouvert pour l’instant.</p>`;
+    h+=l.length?l.map(p=>{const s=S.find(x=>x.id===p.sid);return `<div class="card pr" data-a="open" data-s="${p.sid}" data-p="${p.id}"><div><b>${esc(p.name)}</b><div class="mut">${esc(s?s.name:"?")} · par ${esc(p.by)}</div></div><span class="g">${esc(p.grade)}</span></div>`}).join(""):`<p class="mut">Aucun bloc ouvert pour l’instant.</p>`;
   }
   return h;
 }
@@ -81,7 +79,7 @@ function photo(s){
   const cd=(v.cand||[]).map((c,i)=>`<polygon class='c' data-a='cand' data-i='${i}' points='${c.p}'/>`).join('');
   const d=hs.filter(h=>!h.p).map(h=>{const r=sel[h.id];if(!r&&!v.edit&&!v.cr)return"";
     return `<i class="d${r?" on":""}" data-a="hold" data-id="${h.id}" style="left:${h.x}%;top:${h.y}%;${r?"border-color:"+COL[r]:""}"></i>`}).join("");
-  return `<div class="ph" data-a="img"><img src="${esc(s.img)}" alt="${esc(s.name)}"><svg class='ov' viewBox='0 0 100 100' preserveAspectRatio='none'>${pg}${cd}${v.manual&&v.manualPts.length?`<polyline points="${v.manualPts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="#fbbf24" stroke-width="0.7" vector-effect="non-scaling-stroke"/>${v.manualPts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="0.7" fill="#fbbf24"/>`).join("")}`:""}</svg>${d}</div>`;
+  return `<div class="ph" data-a="img"><img src="${esc(s.img)}" alt="${esc(s.name)}"><svg class='ov' viewBox='0 0 100 100' preserveAspectRatio='none'>${pg}${cd}</svg>${d}</div>`;
 }
 const legend=()=>`<div class="leg mut">${Object.keys(COL).map(k=>`<span style="margin-right:10px"><i style="background:${COL[k]}"></i>${LBL[k]}</span>`).join("")}</div>`;
 
@@ -91,15 +89,15 @@ function sector(){
   h+=photo(s);
   if(v.cr){
     const c=v.cr;
-    h+=legend()+`<div class="row">`+Object.keys(COL).map(k=>`<button class="${v.tool===k?"on":""}" data-a="tool" data-t="${k}" style="border-color:${COL[k]};background:${COL[k]};color:${k==="blanc"||k==="orange"||k==="vert"?"#171717":"#fff"}">${LBL[k]}</button>`).join("")+`</div>`;
-    h+=`<p class="mut">Choisis une couleur, puis touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p>`;
+    h+=legend()+`<div class="row">`+Object.keys(COL).map(k=>`<button class="${v.tool===k?"on":""}" data-a="tool" data-t="${k}" style="border-color:${COL[k]}">${LBL[k]}</button>`).join("")+`</div>`;
+    h+=`<p class="mut">Choisis un type, puis touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p>`;
     h+=`<div class="row"><input id="bn" placeholder="Nom du bloc" value="${esc(c.name)}"><select id="bg">${GR.map(g=>`<option${g===c.grade?" selected":""}>${g}</option>`).join("")}</select></div><div class="row"><button class="p" data-a="save">Enregistrer le bloc</button><button data-a="cancel">Annuler</button></div>`;
   } else {
     h+=`<div class="row"><button class="p" data-a="new">+ Nouveau bloc</button>${isDev?`<button class="${v.edit?"on":""}" data-a="edit">${v.edit?"Terminer l’édition":"Éditer les prises"}</button><label class="btn">Changer la photo<input id="rf" type="file" accept="image/*" hidden></label><button class="dg" data-a="delS">Supprimer</button>`:""}</div>`;
-    if(v.edit){const n=(v.cand||[]).length;h+=`<div class='row'><button data-a='detect'>Détection automatique améliorée</button><label class='mut'>Sensibilité <input id='sens' type='range' min='15' max='90' value='${v.sens}'></label><button data-a='manual' class='${v.manual?"on":""}'>${v.manual?"Arrêter le détourage":"Détourage manuel"}</button></div>${v.manual?`<p class='mut'>Clique plusieurs points autour d’une prise, puis clique près du premier point pour fermer le contour. ${v.manualPts.length} point(s).</p><div class='row'><button class='p' data-a='manualSave' ${v.manualPts.length<3?"disabled":""}>Enregistrer le contour</button><button data-a='manualUndo'>Annuler le dernier point</button><button data-a='manualClear'>Effacer le contour</button></div>`:""}${n?`<div class='row'><button class='p' data-a='valid'>Valider ${n} prises détectées</button><button data-a='clr'>Effacer les propositions</button></div>`:""}<p class='mut'>Touchez une prise existante pour la supprimer. ${H.filter(x=>x.sid===s.id).length} prise(s) enregistrée(s).</p><div class='mut' id='st'>${esc(v.note||'')}</div>`}
+    if(v.edit){const n=(v.cand||[]).length;h+=`<div class='row'><button data-a='detect'>Détecter les prises</button><label class='mut'>Sensibilité <input id='sens' type='range' min='15' max='90' value='${v.sens}'></label>${n?`<button class='p' data-a='valid'>Valider ${n} prises</button><button data-a='clr'>Effacer</button>`:''}</div><p class='mut'>Touche la photo pour détourer une prise, touche une prise pour la supprimer${n?', touche un contour jaune pour l’écarter':''}. ${H.filter(x=>x.sid===s.id).length} prise(s) fixée(s).</p><div class='mut' id='st'>${esc(v.note||'')}</div>`}
     else if(v.pid) h+=legend();
     const l=P.filter(p=>p.sid===s.id).sort((a,b)=>b.t-a.t);
-    h+=l.length?l.map(p=>`<div class="card pr${v.pid===p.id?" sel":""}" data-a="pick" data-p="${p.id}"><div><b>${esc(p.name)}</b><div class="mut">par ${esc(p.by)} · ${Object.keys(p.holds||{}).length} prises</div></div><div class="row" style="margin:0">${gradeHtml(p.grade)}${isDev||p.uid===me.id?`<button class="dg" data-a="delP" data-p="${p.id}">✕</button>`:""}</div></div>`).join(""):`<p class="mut">Aucun bloc ici pour l’instant : crée le premier !</p>`;
+    h+=l.length?l.map(p=>`<div class="card pr${v.pid===p.id?" sel":""}" data-a="pick" data-p="${p.id}"><div><b>${esc(p.name)}</b><div class="mut">par ${esc(p.by)} · ${Object.keys(p.holds||{}).length} prises</div></div><div class="row" style="margin:0"><span class="g">${esc(p.grade)}</span>${isDev||p.uid===me.id?`<button class="dg" data-a="delP" data-p="${p.id}">✕</button>`:""}</div></div>`).join(""):`<p class="mut">Aucun bloc ici pour l’instant : crée le premier !</p>`;
   }
   return h;
 }
@@ -108,7 +106,7 @@ function render(){
   const a=$("#app");
   if(!ready){a.innerHTML=`<p class="mut">${esc(msg)}</p>`;return}
   const active=document.activeElement;
-  if(active&&(active.id==="bn"))return;
+  if(active&&(active.id==="bn"||active.id==="sn"))return;
   a.innerHTML=v.n==="home"?home():sector();
 }
 async function img(f){const b=await createImageBitmap(f),k=Math.min(1,1800/b.width),c=document.createElement("canvas");c.width=b.width*k;c.height=b.height*k;c.getContext("2d").drawImage(b,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,"image/jpeg",.85))}
@@ -119,15 +117,10 @@ const A={
   back:()=>{v.n="home";v.pid=null;v.edit=false;v.cand=null},
   open:e=>{v.n="sector";v.sid=e.dataset.s;v.pid=e.dataset.p||null},
   pick:e=>{v.pid=v.pid===e.dataset.p?null:e.dataset.p},
-  new:()=>{v.cr={sel:{},name:"",grade:"Vert"};v.pid=null;v.edit=false},
+  new:()=>{v.cr={sel:{},name:"",grade:"5"};v.pid=null;v.edit=false},
   cancel:()=>{v.cr=null},
   tool:e=>{v.tool=e.dataset.t},
-  edit:()=>{v.edit=!v.edit;v.cand=null;v.manual=false;v.manualPts=[];v.note=''},
-  manual:()=>{v.manual=!v.manual;v.manualPts=[];v.note=v.manual?"Mode détourage : dessine le contour de la prise.":""},
-  manualUndo:()=>{v.manualPts.pop()},
-  manualClear:()=>{v.manualPts=[]},
-  manualSave:async()=>{if(v.manualPts.length<3)return;const pts=v.manualPts.map(p=>p.join(",")).join(" ");const x=v.manualPts.reduce((a,p)=>a+p[0],0)/v.manualPts.length,y=v.manualPts.reduce((a,p)=>a+p[1],0)/v.manualPts.length;await db.collection("holds").add({sid:v.sid,x,y,p:pts});v.manualPts=[];v.note="Contour enregistré.";},
-
+  edit:()=>{v.edit=!v.edit;v.cand=null;v.note=''},
   detect:async()=>{v.note='Analyse…';render();await new Promise(r=>setTimeout(r,30));v.cand=await detect()},
   cand:e=>{v.cand.splice(+e.dataset.i,1)},
   clr:()=>{v.cand=null;v.note=''},
@@ -141,14 +134,14 @@ const A={
   delP:async e=>{e.stopPropagation&&0;await db.doc("problems/"+e.dataset.p).delete();if(v.pid===e.dataset.p)v.pid=null},
   delS:async()=>{if(!confirm("Supprimer ce secteur, ses prises et ses blocs ?"))return;const sid=v.sid;v.n="home";
     await Promise.all([db.doc("sectors/"+sid).delete(),...H.filter(h=>h.sid===sid).map(h=>db.doc("holds/"+h.id).delete()),...P.filter(p=>p.sid===sid).map(p=>db.doc("problems/"+p.id).delete())])},
-  addS:async()=>{const f=$("#sf").files[0],st=$("#st");if(!f){st.textContent="Choisis une photo.";return}
+  addS:async()=>{const n=$("#sn").value.trim(),f=$("#sf").files[0],st=$("#st");if(!n||!f){st.textContent="Nom et photo requis.";return}
     const u=await up(f,st);if(!u)return;const i=S.length;
-    await db.collection("sectors").add({name:"Mur "+(i+1),img:u,px:2+(i%3)*33,py:2+Math.floor(i/3)*20,pw:30,ph:16});$("#sf").value=""}
+    await db.collection("sectors").add({name:n,img:u,px:2+(i%3)*33,py:2+Math.floor(i/3)*20,pw:30,ph:16});$("#sn").value=""}
 };
 $("#app").addEventListener("click",async e=>{
   const t=e.target.closest("[data-a]");if(!t||!ready)return;
   const a=t.dataset.a;
-  if(a==="img"){if(v.edit&&isDev){const r=t.getBoundingClientRect(),x=Math.round((e.clientX-r.left)/r.width*1000)/10,y=Math.round((e.clientY-r.top)/r.height*1000)/10;if(v.manual){const first=v.manualPts[0];if(v.manualPts.length>=3&&Math.hypot(x-first[0],y-first[1])<2){const pts=v.manualPts.map(p=>p.join(",")).join(" "),cx=v.manualPts.reduce((a,p)=>a+p[0],0)/v.manualPts.length,cy=v.manualPts.reduce((a,p)=>a+p[1],0)/v.manualPts.length;await db.collection("holds").add({sid:v.sid,x:cx,y:cy,p:pts});v.manualPts=[];v.note="Contour enregistré."}else v.manualPts.push([x,y])}else await addHold(x,y)}return}
+  if(a==="img"){if(v.edit&&isDev){const r=t.getBoundingClientRect(),x=Math.round((e.clientX-r.left)/r.width*1000)/10,y=Math.round((e.clientY-r.top)/r.height*1000)/10;await addHold(x,y)}return}
   if(a==="delP")e.stopPropagation();
   if(A[a]){await A[a](t);render()}
 });
@@ -203,62 +196,25 @@ async function detect(){
   const s=S.find(z=>z.id===v.sid);
   try{
     const P=await pix(s),w=P.w,h=P.h,d=P.d,hs=new Uint32Array(4096);
-    // Estimation de la couleur du mur à partir des bords de la photo,
-    // moins contaminés par les prises que l'image entière.
-    const band=Math.max(3,Math.round(Math.min(w,h)*.035));
-    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-      if(x<band||x>=w-band||y<band||y>=h-band){
-        const i=(y*w+x)*4,bin=(d[i]>>4<<8)|(d[i+1]>>4<<4)|(d[i+2]>>4);hs[bin]++;
-      }
-    }
+    for(let i=0;i<d.length;i+=4)hs[(d[i]>>4<<8)|(d[i+1]>>4<<4)|(d[i+2]>>4)]++;
     let bi=0;for(let i=1;i<4096;i++)if(hs[i]>hs[bi])bi=i;
-    const br=((bi>>8)&15)*16+8,bg=((bi>>4)&15)*16+8,bb=(bi&15)*16+8;
-    const threshold=34+(90-v.sens)*.72;
-    const mask=new Uint8Array(w*h),visited=new Uint8Array(w*h),out=[];
-    // Le masque combine écart à la couleur du mur, saturation et contraste local.
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-      const p=y*w+x,i=p*4,r=d[i],g=d[i+1],b=d[i+2];
-      const wallDist=Math.hypot(r-br,g-bg,b-bb);
-      const lum=(r+g+b)/3, sat=Math.max(r,g,b)-Math.min(r,g,b);
-      const li=((y-1)*w+x)*4,ri=((y+1)*w+x)*4,ui=(y*w+x-1)*4,oi=(y*w+x+1)*4;
-      const edge=Math.abs((d[li]+d[li+1]+d[li+2])-(d[ri]+d[ri+1]+d[ri+2]))/3+
-                  Math.abs((d[ui]+d[ui+1]+d[ui+2])-(d[oi]+d[oi+1]+d[oi+2]))/3;
-      if(wallDist>threshold || (sat>Math.max(22,threshold*.55)&&wallDist>threshold*.65) || edge>threshold*1.35)mask[p]=1;
+    const br=((bi>>8)&15)*16+8,bg=((bi>>4)&15)*16+8,bb=(bi&15)*16+8,t=105-v.sens;
+    const m=new Uint8Array(w*h),vis=new Uint8Array(w*h),sc=new Uint8Array(w*h),out=[];
+    for(let i=0;i<w*h;i++)if(Math.hypot(d[i*4]-br,d[i*4+1]-bg,d[i*4+2]-bb)>t)m[i]=1;
+    for(let i=0;i<w*h&&out.length<300;i++){
+      if(!m[i]||vis[i])continue;
+      const st=[i],px=[];vis[i]=1;let x0=w,x1=0,y0=h,y1=0,sx=0,sy=0;
+      while(st.length){const p=st.pop(),x=p%w,y=(p/w)|0;px.push(p);sx+=x;sy+=y;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+        const nb=[];if(x>0)nb.push(p-1);if(x<w-1)nb.push(p+1);if(y>0)nb.push(p-w);if(y<h-1)nb.push(p+w);
+        for(const q of nb)if(m[q]&&!vis[q]){vis[q]=1;st.push(q)}}
+      const a=px.length,bw=x1-x0+1,bh=y1-y0+1;
+      if(a<w*h*.0003||a>w*h*.03||Math.max(bw,bh)>4*Math.min(bw,bh)||a<.3*bw*bh||x0==0||y0==0||x1==w-1||y1==h-1)continue;
+      px.forEach(p=>sc[p]=1);const cx=sx/a,cy=sy/a;
+      out.push({x:Math.round(cx/w*1000)/10,y:Math.round(cy/h*1000)/10,p:outline(sc,w,h,cx,cy)});
+      px.forEach(p=>sc[p]=0);
     }
-    // Lissage morphologique léger : comble les petits trous et relie les pixels d'une même prise.
-    const closed=new Uint8Array(mask);
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-      const p=y*w+x;
-      if(mask[p]||mask[p-1]&&mask[p+1]||mask[p-w]&&mask[p+w]||
-         mask[p-1]&&mask[p-w]||mask[p+1]&&mask[p+w])closed[p]=1;
-    }
-    for(let i=0;i<w*h&&out.length<250;i++){
-      if(!closed[i]||visited[i])continue;
-      const stack=[i],pixels=[];visited[i]=1;
-      let x0=w,x1=0,y0=h,y1=0,sx=0,sy=0,edgeCount=0;
-      while(stack.length){
-        const p=stack.pop(),x=p%w,y=(p/w)|0;pixels.push(p);sx+=x;sy+=y;
-        if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
-        if(x===0||y===0||x===w-1||y===h-1)edgeCount++;
-        const ns=[p-1,p+1,p-w,p+w,p-w-1,p-w+1,p+w-1,p+w+1];
-        for(const q of ns)if(q>=0&&q<w*h&&!visited[q]&&closed[q]){visited[q]=1;stack.push(q)}
-      }
-      const area=pixels.length,bw=x1-x0+1,bh=y1-y0+1,box=bw*bh,ratio=Math.max(bw,bh)/Math.max(1,Math.min(bw,bh));
-      const areaRatio=area/(w*h);
-      if(area<w*h*.00025||area>w*h*.035||ratio>4.2||area/box<.16||x0<=1||y0<=1||x1>=w-2||y1>=h-2)continue;
-      // Élimine les régions très filiformes et les petits artefacts.
-      if(Math.min(bw,bh)<4||edgeCount>area*.12)continue;
-      const cx=sx/area,cy=sy/area,component=new Uint8Array(w*h);
-      for(const q of pixels)component[q]=1;
-      out.push({x:Math.round(cx/w*1000)/10,y:Math.round(cy/h*1000)/10,p:outline(component,w,h,cx,cy)});
-    }
-    // Fusion des propositions dont les centres sont presque confondus.
-    const filtered=[];
-    for(const c of out.sort((a,b)=>a.y-b.y)){
-      if(!filtered.some(q=>Math.hypot(q.x-c.x,q.y-c.y)<1.8))filtered.push(c);
-    }
-    v.note=filtered.length?filtered.length+' propositions détectées. Vérifie-les avant validation.':'Aucune prise détectée : essaie une autre sensibilité ou le détourage manuel.';
-    return filtered;
+    v.note=out.length?out.length+' prises détectées : écarte les erreurs puis valide.':'Aucune prise détectée : essaie une autre sensibilité.';
+    return out;
   }catch(e){v.note='Analyse impossible : '+(e.message||e);return null}
 }
 
