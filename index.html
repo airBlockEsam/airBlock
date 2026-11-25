@@ -45,9 +45,11 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 .fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:#bdbdbd;font-size:28px;padding:0;color:#fff}
 .fab.on{background:#2e9a3f}
 #cm{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}#cm[hidden]{display:none}.mb{background:#fff;border-radius:8px;padding:18px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:10px}.mb textarea{font:inherit;padding:9px;border:1px solid var(--bd);border-radius:6px;resize:vertical}
+#sp{position:fixed;inset:0;z-index:50;background:#000;transition:opacity .35s}#sp.o{opacity:0;pointer-events:none}#sp img{width:100%;height:100%;object-fit:contain;display:block}@media (prefers-reduced-motion:reduce){#sp{transition:none}}
 .bt2{display:flex;gap:18px;align-items:center;padding:14px 16px;font-weight:500}
 </style></head>
 <body>
+<div id="sp" aria-hidden="true"><img src="splash.jpg" alt=""></div>
 <header><button id="cb" aria-label="Laisser un commentaire"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg></button><button id="mn" aria-label="Retour" hidden>←</button><span id="ti">Blocs du club</span><span id="dev"></span></header>
 <form id="lf"><input id="le" type="email" placeholder="Email" autocomplete="username"><input id="lp" type="password" placeholder="Mot de passe" autocomplete="current-password"><button class="yb">Connexion</button></form>
 <div id="cm" hidden><div class="mb" role="dialog" aria-label="Laisser un commentaire"><b>Ton avis nous aide</b><p class="mut">Suggestion, idée ou bug : écris-le ici. Le message est anonyme, aucun nom ni identifiant n’est enregistré.</p><select id="ct" aria-label="Type de message"><option>Suggestion</option><option>Bug</option><option>Autre</option></select><textarea id="cx" rows="5" maxlength="1000" placeholder="Ton message…"></textarea><div class="row" style="margin:8px 0 0"><button class="yb" id="cs">Envoyer</button><button id="cq">Fermer</button></div><div class="mut" id="cr" role="status"></div></div></div>
@@ -56,6 +58,8 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 <script src="config.js"></script>
 <script>
 const $=s=>document.querySelector(s);
+setTimeout(()=>{const p=$('#sp');p.classList.add('o');setTimeout(()=>p.remove(),400)},1000);
+const nm=p=>p.name==='Sans nom'?'':p.name||'';
 const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CL={jaune:'#f2d216',orange:'#f08a1c',vert:'#34801f',bleu:'#4287e0',rouge:'#cc2b1c',blanc:'#ffffff',noir:'#000000',violet:'#7f35d4'};
 const LBL={hand:'Main',start:'Départ',foot:'Pied',finish:'Fin'},BG={start:'D',foot:'P',finish:'F'};
@@ -80,18 +84,18 @@ function thumb(s,p){
   return `<span class='th' style='border-color:${p.color==='blanc'?'#fff':rc(p.color)};box-shadow:0 0 0 1px #999'>${s&&s.img&&h?`<img src='${esc(s.img)}' alt='' style='left:50%;top:50%;width:420%;transform:translate(-${h.x}%,-${h.y}%)'>`:''}</span>`;
 }
 function item(p,s){
-  return `<span class='sn' style='color:${p.color==='blanc'||p.color==='jaune'?'#888':rc(p.color)}'>${num(p.sid)}</span>${thumb(s,p)}<div class='mt'>${esc(p.name)}</div>${plan(p.sid,true)}<span class='ck${(p.done||[]).includes(me.id)?' me':''}'>${(p.done||[]).length}✓</span>`;
+  return `<span class='sn' style='color:${p.color==='blanc'||p.color==='jaune'?'#888':rc(p.color)}'>${num(p.sid)}</span>${thumb(s,p)}<div class='mt'>${esc(nm(p))}</div>${plan(num(p.sid),true)}`;
 }
 function swatches(act,cur){return `<div class='cb'>`+Object.keys(CL).map(k=>`<button data-a='${act}' data-c='${k}' aria-label='${k}' class='${cur(k)?'on':''}' style='background:${CL[k]}'></button>`).join('')+`</div>`}
 
 function vHome(){
   const sel=cur();
   const hl=v.cf?new Set(P.filter(p=>p.color===v.cf).map(p=>num(p.sid))):null;
-  const l=P.filter(p=>(!v.sn||(sel&&p.sid===sel.id))&&(!v.cf||p.color===v.cf)&&(!v.mine||p.uid===me.id)&&(v.per==='all'||p.t>Date.now()-2592e6)).sort((a,b)=>b.t-a.t);
+  const l=P.filter(p=>(!v.sn||(sel&&p.sid===sel.id))&&(!v.cf||p.color===v.cf)&&(v.per==='all'||p.t>Date.now()-2592e6)).sort((a,b)=>b.t-a.t);
   TT=l.length+' bloc'+(l.length>1?'s':'')+(v.sn?' · Secteur '+v.sn:'');
   let h=`<div class='cd'>${plan(v.sn,false,hl)}`;
   h+=`<div class='sr'><span>${v.sn?'Secteur '+v.sn:'Touche un secteur'}</span>${v.sn?`<button class='x' data-a='sec' data-s='${v.sn}' aria-label='Désélectionner'>✕</button>`:''}</div>`;
-  h+=swatches('cf',k=>v.cf===k,v.cf)+`<div class='ft'><button class='tx' data-a='reset'>RÉINITIALISER</button><button class='tx${v.mine?' on':''}' data-a='mine'>MES BLOCS</button></div></div>`;
+  h+=swatches('cf',k=>v.cf===k,v.cf)+`<div class='ft'><button class='tx' data-a='reset'>RÉINITIALISER</button></div></div>`;
   if(v.sn)h+=`<div class='row'>${sel?`<button class='yb' data-a='new'>+ Nouveau bloc</button>`:`<span class='mut'>Pas encore de photo pour ce secteur.</span>`}${isDev&&sel?`<button data-a='edit'>Photo et prises</button><button class='dg' data-a='delS'>Supprimer</button>`:''}</div>`;
   h+=`<div class='lh'><select id='per' aria-label='Période'><option value='all'${v.per==='all'?' selected':''}>Tous les blocs</option><option value='month'${v.per==='month'?' selected':''}>Ce mois-ci</option></select></div>`;
   h+=l.length?l.map(p=>`<div class='it' data-a='open' data-p='${p.id}'>${item(p,S.find(x=>x.id===p.sid))}</div>`).join(''):`<p class='mut pd'>Aucun bloc ici pour l’instant.</p>`;
@@ -120,13 +124,13 @@ function photo(s){
 
 function vProb(){
   const p=P.find(x=>x.id===v.pid);if(!p){v.n='home';return vHome()}
-  const s=S.find(x=>x.id===p.sid)||{},dn=(p.done||[]).includes(me.id);TT=p.name;
-  return `<div class='it' style='cursor:default'>${item(p,s)}</div><div class='pw'>${photo(s)}</div><div class='bt2'><span>✓ ${(p.done||[]).length}</span><span>${new Date(p.t).toLocaleDateString('fr-FR')}</span><span class='mut'>par ${esc(p.by)}</span>${isDev||p.uid===me.id?`<button class='tx dg' data-a='delP' data-p='${p.id}'>Supprimer</button>`:''}</div><button class='fab${dn?' on':''}' data-a='done' aria-label='Marquer comme réussi'>✓</button>`;
+  const s=S.find(x=>x.id===p.sid)||{};TT=nm(p)||'Secteur '+num(p.sid);
+  return `<div class='it' style='cursor:default'>${item(p,s)}</div><div class='pw'>${photo(s)}</div><div class='bt2'><span>${new Date(p.t).toLocaleDateString('fr-FR')}</span><span class='mut'>par ${esc(p.by)}</span>${isDev||p.uid===me.id?`<button class='tx dg' data-a='delP' data-p='${p.id}'>Supprimer</button>`:''}</div>`;
 }
 function vCreate(){
   const s=S.find(x=>x.id===v.sid),c=v.cr;if(!s||!c){v.n='home';return vHome()}
   TT='Nouveau bloc · Secteur '+num(s.id);
-  return photo(s)+`<div class='cd'>${swatches('cc',k=>c.color===k,1)}<div class='row'>`+Object.keys(LBL).map(k=>`<button class='${v.tool===k?'on':''}' data-a='tool' data-t='${k}'>${LBL[k]}</button>`).join('')+`</div><p class='mut'>Choisis la couleur, puis un type de prise et touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p><div class='row'><input id='bn' placeholder='Nom du bloc (facultatif)' value='${esc(c.name)}'><button class='yb' data-a='save'>Enregistrer</button><button data-a='back'>Annuler</button></div></div>`;
+  return photo(s)+`<div class='cd'>${swatches('cc',k=>c.color===k,1)}<div class='row'>`+Object.keys(LBL).map(k=>`<button class='${v.tool===k?'on':''}' data-a='tool' data-t='${k}'>${LBL[k]}</button>`).join('')+`</div><p class='mut'>Choisis la couleur, puis un type de prise et touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p><div class='row'><input id='bw' placeholder='Ton prénom (obligatoire)' autocomplete='off' maxlength='30' value='${esc(c.by||'')}'><input id='bn' placeholder='Nom du bloc (facultatif)' value='${esc(c.name)}'><button class='yb' data-a='save'>Enregistrer</button><button data-a='back'>Annuler</button></div></div>`;
 }
 function vEdit(){
   const s=S.find(x=>x.id===v.sid);if(!s||!isDev){v.n='home';return vHome()}
@@ -142,7 +146,7 @@ function vEdit(){
 function render(){
   const a=$('#app');
   if(!ready){a.innerHTML=`<p class='mut pd'>${esc(TT)}</p>`;return}
-  if(document.activeElement&&document.activeElement.id==='bn')return;
+  if(document.activeElement&&['bn','bw'].includes(document.activeElement.id))return;
   a.innerHTML={home:vHome,prob:vProb,create:vCreate,edit:vEdit}[v.n]();
   $('#ti').textContent=TT;$('#mn').hidden=v.n==='home';
 }
@@ -221,23 +225,21 @@ async function detect(){
 
 /* Actions */
 const A={
-  mine:()=>{v.mine=!v.mine&&true},
   back:()=>{if(v.n==='home')return;v.n='home';v.pid=null;v.cr=null;v.cand=null;v.hs=null;v.em='auto';v.dp=[];v.note=''},
   sec:e=>{const k=+e.dataset.s;v.sn=v.sn===k?null:k},
   cf:e=>{const c=e.dataset.c;v.cf=v.cf===c?null:c},
-  reset:()=>{v.cf=null;v.sn=null;v.mine=false},
+  reset:()=>{v.cf=null;v.sn=null},
   open:e=>{v.pid=e.dataset.p;v.n='prob'},
-  new:()=>{v.sid=cur().id;v.cr={sel:{},name:'',color:'jaune'};v.n='create'},
+  new:()=>{v.sid=cur().id;v.cr={sel:{},name:'',by:'',color:'jaune'};v.n='create'},
   cc:e=>{v.cr.color=e.dataset.c},
   tool:e=>{v.tool=e.dataset.t},
   hold:async e=>{const id=e.dataset.id;
     if(v.n==='create'){const s=v.cr.sel;if(s[id]===v.tool)delete s[id];else s[id]=v.tool}
     else if(v.n==='edit'){v.hs=v.hs===id?null:id}},
   save:async()=>{const c=v.cr;if(!Object.keys(c.sel).length){alert('Ajoute au moins une prise.');return}
-    if(me.name==='Anonyme'){me.name=(prompt('Ton prénom ?')||'Anonyme').slice(0,30);try{localStorage.setItem('n',me.name)}catch(e){}}
-    const r={sid:v.sid,name:c.name.trim()||'Sans nom',color:c.color,by:me.name,uid:me.id,holds:c.sel,t:Date.now(),done:[]};
+    if(!(c.by||'').trim()){alert('Indique ton prénom.');return}
+    const r={sid:v.sid,name:c.name.trim(),color:c.color,by:c.by.trim().slice(0,30),uid:me.id,holds:c.sel,t:Date.now()};
     v.cr=null;v.n='home';await db.collection('problems').add(r)},
-  done:async()=>{const p=P.find(x=>x.id===v.pid),d=new Set(p.done||[]);d.has(me.id)?d.delete(me.id):d.add(me.id);await db.doc('problems/'+p.id).update({done:[...d]})},
   delP:async e=>{await db.doc('problems/'+e.dataset.p).delete();v.n='home';v.pid=null},
   edit:()=>{v.sid=cur().id;v.n='edit';v.note=''},
   delS:async()=>{if(!confirm('Supprimer ce secteur, ses prises et ses blocs ?'))return;const sid=cur().id;v.sn=null;
@@ -273,7 +275,7 @@ document.addEventListener('click',async e=>{
 $('#mn').addEventListener('click',()=>{if(!ready)return;A.back();render()});
 document.addEventListener('input',e=>{
   if(e.target.id==='sens')v.sens=+e.target.value;if(e.target.id==='tol')v.tol=+e.target.value;
-  if(e.target.id==='bn'&&v.cr)v.cr.name=e.target.value});
+  if(e.target.id==='bn'&&v.cr)v.cr.name=e.target.value;if(e.target.id==='bw'&&v.cr)v.cr.by=e.target.value});
 document.addEventListener('change',async e=>{
   if(e.target.id==='per'){v.per=e.target.value;render()}
   if(e.target.id==='rf'&&e.target.files[0]){const u=await up(e.target.files[0]);if(u)await db.doc('sectors/'+v.sid).update({img:u})}});
