@@ -3,15 +3,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Blocs du club</title>
 <style>
-:root{--y:#fcec52;--bd:#e3e3e3;--mut:#6f6f6f;color-scheme:light}
+:root{--y:#007BC4;--bd:#e3e3e3;--mut:#6f6f6f;color-scheme:light}
 *{box-sizing:border-box}
 body{margin:0;background:#f2f2f2;color:#1b1b1b;font:16px/1.4 Roboto,system-ui,-apple-system,"Segoe UI",sans-serif}
 header{position:sticky;top:0;z-index:5;background:var(--y);display:flex;align-items:center;gap:14px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-header button{background:none;border:0;font-size:26px;line-height:1;padding:4px;color:#000}
+header{color:#fff}header button{background:none;box-shadow:none;border:0;font-size:26px;line-height:1;padding:4px;color:#fff}.dv{font:700 16px ui-monospace,Menlo,monospace!important}
 #ti{flex:1;font-size:19px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tag{font-size:11px;background:#000;color:var(--y);padding:2px 7px;border-radius:9px;margin-right:6px}
-#mm{position:absolute;top:56px;left:8px;z-index:6;background:#fff;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.3);padding:6px;display:flex;flex-direction:column}
-#mm[hidden]{display:none}#mm button{text-align:left;padding:10px 16px}
+.tag{font-size:11px;background:#fff;color:#007BC4;padding:2px 7px;border-radius:9px;margin-right:6px}
 #lf{display:none;gap:8px;flex-wrap:wrap;padding:8px 16px;background:#fff}
 main{max-width:720px;margin:0 auto;padding:0 0 110px}
 button,select,input{font:inherit}
@@ -19,15 +17,15 @@ button{cursor:pointer;border:0;background:#fff;border-radius:6px;padding:9px 14p
 input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background:#fff;color:#111;max-width:100%}
 .mut{color:var(--mut);font-size:14px}.pd{padding:16px}
 .cd{background:#fff;margin:16px 14px;padding:14px 18px;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-.pl{width:100%;display:block;touch-action:manipulation}.pl text{font-size:3px;fill:#8a8a8a;pointer-events:none}
-.mp{width:92px;height:58px;flex:none}
+.pl{width:100%;display:block;touch-action:manipulation}
+.mp{width:110px;height:26px;flex:none}
 .sr{display:flex;justify-content:space-between;align-items:center;font-size:21px;margin:8px 0}
 .x{background:none;box-shadow:none;font-size:26px;padding:0 6px}
-.cb{display:flex;margin:12px 0}.cb button{flex:1;height:44px;border-radius:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
-.cb button.on{box-shadow:inset 0 0 0 4px #fcec52,inset 0 0 0 6px #000}
+.cb{display:flex;align-items:center;gap:2px;margin:12px 0}.cb button{flex:1;height:44px;border-radius:0;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2);transition:height .15s,opacity .15s}
+.cb.f button{height:16px;opacity:.45;filter:grayscale(1)}.cb.f button.on{height:48px;opacity:1;filter:none;outline:0}
 .ft{display:flex;justify-content:space-between}.tx{background:none;box-shadow:none;font-weight:700;letter-spacing:.5px;padding:10px 4px}.tx.on{text-decoration:underline}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 14px}.cd .row{margin:10px 0}
-.yb{background:var(--y);font-weight:700}.dg{color:#c0261a}.on{outline:2px solid #000}
+.yb{background:var(--y);color:#fff;font-weight:700}.dg{color:#c0261a}.on{outline:2px solid #000}
 .lh{padding:8px 18px;color:#8a8a8a}.lh select{border:0;background:none;color:#8a8a8a;font-size:18px;padding:0}
 .it{display:flex;align-items:center;gap:10px;background:#fff;padding:8px 14px;border-bottom:1px solid var(--bd);cursor:pointer}
 .sn{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:700;color:#7f35d4;width:16px}
@@ -36,66 +34,69 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 .pw{position:relative}.ph{position:relative;line-height:0;touch-action:manipulation;background:#777;user-select:none}
 .ph img{width:100%;display:block;-webkit-user-drag:none}.ph.no{padding:40px;text-align:center;color:#fff;line-height:1.4}
 .ov{position:absolute;inset:0;width:100%;height:100%}
-.ov polygon{pointer-events:all;cursor:pointer;vector-effect:non-scaling-stroke}.ov polygon.c{stroke:#fcec52;stroke-dasharray:5 3;stroke-width:2;fill:rgba(252,236,82,.25)}
-.ov .dl{fill:rgba(252,236,82,.2);stroke:#fcec52;stroke-width:2;vector-effect:non-scaling-stroke}
+.ov polygon{pointer-events:all;cursor:pointer;vector-effect:non-scaling-stroke}.ov polygon.c{stroke:#007BC4;stroke-dasharray:5 3;stroke-width:2;fill:rgba(0,123,196,.25)}
+.ov .dl{fill:rgba(0,123,196,.2);stroke:#007BC4;stroke-width:2;vector-effect:non-scaling-stroke}
 .dm polygon,.dm .d{pointer-events:none}
 .d{position:absolute;width:30px;height:30px;border-radius:50%;transform:translate(-50%,-50%);border:3px solid #fff}
-.dp{position:absolute;width:10px;height:10px;border-radius:50%;background:#fcec52;border:2px solid #000;transform:translate(-50%,-50%);pointer-events:none}
+.dp{position:absolute;width:10px;height:10px;border-radius:50%;background:#007BC4;border:2px solid #000;transform:translate(-50%,-50%);pointer-events:none}
 .rb{position:absolute;transform:translate(-50%,-50%);background:#000;color:#fff;font:700 12px/1 system-ui;padding:3px 5px;border-radius:9px;pointer-events:none}
 .fl{position:absolute;right:14px;top:34%;display:flex;flex-direction:column;gap:12px}
 .fb{width:48px;height:48px;border-radius:50%;background:var(--y);font-size:20px;padding:0}
 .fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:#bdbdbd;font-size:28px;padding:0;color:#fff}
 .fab.on{background:#2e9a3f}
+#cm{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}#cm[hidden]{display:none}.mb{background:#fff;border-radius:8px;padding:18px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:10px}.mb textarea{font:inherit;padding:9px;border:1px solid var(--bd);border-radius:6px;resize:vertical}
 .bt2{display:flex;gap:18px;align-items:center;padding:14px 16px;font-weight:500}
 </style></head>
 <body>
-<header><button id="mn" aria-label="Menu">☰</button><span id="ti">Blocs du club</span><span id="dev"></span></header>
-<div id="mm" hidden><button data-a="mall">Tous les blocs</button><button data-a="mine">Mes blocs</button></div>
+<header><button id="cb" aria-label="Laisser un commentaire"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg></button><button id="mn" aria-label="Retour" hidden>←</button><span id="ti">Blocs du club</span><span id="dev"></span></header>
 <form id="lf"><input id="le" type="email" placeholder="Email" autocomplete="username"><input id="lp" type="password" placeholder="Mot de passe" autocomplete="current-password"><button class="yb">Connexion</button></form>
+<div id="cm" hidden><div class="mb" role="dialog" aria-label="Laisser un commentaire"><b>Ton avis nous aide</b><p class="mut">Suggestion, idée ou bug : écris-le ici. Le message est anonyme, aucun nom ni identifiant n’est enregistré.</p><select id="ct" aria-label="Type de message"><option>Suggestion</option><option>Bug</option><option>Autre</option></select><textarea id="cx" rows="5" maxlength="1000" placeholder="Ton message…"></textarea><div class="row" style="margin:8px 0 0"><button class="yb" id="cs">Envoyer</button><button id="cq">Fermer</button></div><div class="mut" id="cr" role="status"></div></div></div>
 <main id="app"><p class="mut pd">Chargement…</p></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const CL={vert:'#34801f',orange:'#f08a1c',bleu:'#4287e0',rouge:'#cc2b1c',blanc:'#ffffff',noir:'#000000',violet:'#7f35d4'};
+const CL={jaune:'#f2d216',orange:'#f08a1c',vert:'#34801f',bleu:'#4287e0',rouge:'#cc2b1c',blanc:'#ffffff',noir:'#000000',violet:'#7f35d4'};
 const LBL={hand:'Main',start:'Départ',foot:'Pied',finish:'Fin'},BG={start:'D',foot:'P',finish:'F'};
-let db,assets,isDev=false,me={id:null,name:'Anonyme'},S=[],H=[],P=[],ready=false,TT='Blocs du club';
-let v={n:'home',sid:null,pid:null,cf:[],mine:false,per:'all',tool:'hand',cr:null,em:'auto',dp:[],hs:null,cand:null,sens:45,tol:40,note:'',place:null,menu:false};
+let db,assets,isDev=false,me={id:null,name:'Anonyme'},S=[],H=[],P=[],C=[],ready=false,TT='Blocs du club';
+let v={n:'home',sid:null,pid:null,cf:null,sn:null,mine:false,per:'all',tool:'hand',cr:null,em:'auto',dp:[],hs:null,cand:null,sens:45,tol:40,note:'',place:null,menu:false};
 const snap=q=>q.docs.map(d=>Object.assign({id:d.id},d.data()));
 const secs=()=>[...S].sort((a,b)=>(a.n||1e9)-(b.n||1e9)||String(a.id).localeCompare(String(b.id)));
-const num=id=>{const s=S.find(x=>x.id===id);return s?(s.n||secs().findIndex(x=>x.id===id)+1):0};
+const num=id=>{const s=S.find(x=>x.id===id);return s&&s.n||'?'};
+const cur=()=>S.find(x=>x.n===v.sn);
 const seg=s=>{if(s.a&&s.b)return[s.a,s.b];const i=num(s.id)-1,x=6+(i%8)*11,y=56-Math.floor(i/8)*8;return[[x,y],[x+9,y]]};
 const rc=c=>c==='blanc'?'#fff':CL[c]||'#999';
 
+const SEC=['M80 232V150H400L535 68H588','M600 68H772','M782 68H938L1003 130','M1008 140L1092 222H1200L1316 185','M1328 182L1452 145L1706 163','M1716 168L1742 170L1762 135L1912 146','M1928 148H1990V452'];
+const LP=[[240,118],[686,40],[860,40],[1146,268],[1400,128],[1840,108],[1935,330]];
 function plan(sel,mini,hl){
-  const L=secs().map(s=>{const[a,b]=seg(s),on=s.id===sel,c=on?'#000':hl&&!hl.has(s.id)?'#e6e6e6':'#b3b3b3',w=(mini?2.3:1)*(on?3.4:2.4),co=`x1='${a[0]}' y1='${a[1]}' x2='${b[0]}' y2='${b[1]}' stroke-linecap='round'`;
-    return `<g ${mini?'':`data-a='sec'`} data-s='${s.id}'><line ${co} stroke='transparent' stroke-width='7'/><line ${co} stroke='${c}' stroke-width='${w}' ${on?'':`stroke-dasharray='6 1.2'`} pointer-events='none'/>${mini?'':`<text x='${(a[0]+b[0])/2}' y='${(a[1]+b[1])/2-2.5}' text-anchor='middle'>${num(s.id)}</text>`}</g>`}).join('');
-  const pm=!mini&&v.place&&v.place.a?`<circle cx='${v.place.a[0]}' cy='${v.place.a[1]}' r='1.6' fill='#d32'/>`:'';
-  return `<svg ${mini?`class='mp'`:`id='plan' class='pl'`} viewBox='0 0 100 64' role='img' aria-label='Plan de la salle'>${L}${pm}</svg>`;
+  const L=SEC.map((d,i)=>{const k=i+1,on=k===sel,c=on?'#000':mini?'#bdbdbd':hl&&!hl.has(k)?'#e2e2e2':'#8c8c8c';
+    return `<g ${mini?'':`data-a='sec'`} data-s='${k}'>${mini?'':`<path d='${d}' fill='none' stroke='transparent' stroke-width='90'/>`}<path d='${d}' fill='none' stroke='${c}' stroke-width='${mini?60:22}' pointer-events='none'/>${mini?'':`<text x='${LP[i][0]}' y='${LP[i][1]}' text-anchor='middle' font-size='44' fill='#777' pointer-events='none'>${k}</text>`}</g>`}).join('');
+  return `<svg ${mini?`class='mp'`:`id='plan' class='pl'`} viewBox='0 0 2070 480' role='img' aria-label='Plan de la salle'>${L}</svg>`;
 }
 function thumb(s,p){
   const hs=p.holds||{},k=Object.keys(hs),st=k.find(i=>hs[i]==='start')||k[0],h=H.find(x=>x.id===st);
   return `<span class='th' style='border-color:${p.color==='blanc'?'#fff':rc(p.color)};box-shadow:0 0 0 1px #999'>${s&&s.img&&h?`<img src='${esc(s.img)}' alt='' style='left:50%;top:50%;width:420%;transform:translate(-${h.x}%,-${h.y}%)'>`:''}</span>`;
 }
 function item(p,s){
-  return `<span class='sn' style='color:${p.color==='blanc'?'#999':rc(p.color)}'>${num(p.sid)}</span>${thumb(s,p)}<div class='mt'>${esc(p.name)}</div>${plan(p.sid,true)}<span class='ck${(p.done||[]).includes(me.id)?' me':''}'>${(p.done||[]).length}✓</span>`;
+  return `<span class='sn' style='color:${p.color==='blanc'||p.color==='jaune'?'#888':rc(p.color)}'>${num(p.sid)}</span>${thumb(s,p)}<div class='mt'>${esc(p.name)}</div>${plan(p.sid,true)}<span class='ck${(p.done||[]).includes(me.id)?' me':''}'>${(p.done||[]).length}✓</span>`;
 }
 function swatches(act,cur){return `<div class='cb'>`+Object.keys(CL).map(k=>`<button data-a='${act}' data-c='${k}' aria-label='${k}' class='${cur(k)?'on':''}' style='background:${CL[k]}'></button>`).join('')+`</div>`}
 
 function vHome(){
-  const sel=S.find(x=>x.id===v.sid);
-  const hl=v.cf.length?new Set(P.filter(p=>v.cf.includes(p.color)).map(p=>p.sid)):null;
-  const l=P.filter(p=>(!sel||p.sid===sel.id)&&(!v.cf.length||v.cf.includes(p.color))&&(!v.mine||p.uid===me.id)&&(v.per==='all'||p.t>Date.now()-2592e6)).sort((a,b)=>b.t-a.t);
-  TT=l.length+' bloc'+(l.length>1?'s':'')+(sel?' · Secteur '+num(sel.id):'');
-  let h=`<div class='cd'>${plan(sel&&sel.id,false,hl)}`;
-  if(v.place)h+=`<p class='mut'>${v.place.a?'Touche la fin du secteur sur le plan.':'Touche le début du secteur sur le plan.'}</p>`;
-  h+=`<div class='sr'><span>${sel?'Secteur '+num(sel.id):'Touche un secteur'}</span>${sel?`<button class='x' data-a='sec' data-s='${sel.id}' aria-label='Désélectionner'>✕</button>`:''}</div>`;
-  h+=swatches('cf',k=>v.cf.includes(k))+`<div class='ft'><button class='tx' data-a='reset'>RÉINITIALISER</button><button class='tx${v.mine?' on':''}' data-a='mine'>MES BLOCS</button></div></div>`;
-  if(sel)h+=`<div class='row'>${sel.img?`<button class='yb' data-a='new'>+ Nouveau bloc</button>`:`<span class='mut'>Pas encore de photo.</span>`}${isDev?`<button data-a='edit'>Photo et prises</button><button data-a='place'>Placer sur le plan</button><button class='dg' data-a='delS'>Supprimer</button>`:''}</div>`;
+  const sel=cur();
+  const hl=v.cf?new Set(P.filter(p=>p.color===v.cf).map(p=>num(p.sid))):null;
+  const l=P.filter(p=>(!v.sn||(sel&&p.sid===sel.id))&&(!v.cf||p.color===v.cf)&&(!v.mine||p.uid===me.id)&&(v.per==='all'||p.t>Date.now()-2592e6)).sort((a,b)=>b.t-a.t);
+  TT=l.length+' bloc'+(l.length>1?'s':'')+(v.sn?' · Secteur '+v.sn:'');
+  let h=`<div class='cd'>${plan(v.sn,false,hl)}`;
+  h+=`<div class='sr'><span>${v.sn?'Secteur '+v.sn:'Touche un secteur'}</span>${v.sn?`<button class='x' data-a='sec' data-s='${v.sn}' aria-label='Désélectionner'>✕</button>`:''}</div>`;
+  h+=swatches('cf',k=>v.cf===k,v.cf)+`<div class='ft'><button class='tx' data-a='reset'>RÉINITIALISER</button><button class='tx${v.mine?' on':''}' data-a='mine'>MES BLOCS</button></div></div>`;
+  if(v.sn)h+=`<div class='row'>${sel?`<button class='yb' data-a='new'>+ Nouveau bloc</button>`:`<span class='mut'>Pas encore de photo pour ce secteur.</span>`}${isDev&&sel?`<button data-a='edit'>Photo et prises</button><button class='dg' data-a='delS'>Supprimer</button>`:''}</div>`;
   h+=`<div class='lh'><select id='per' aria-label='Période'><option value='all'${v.per==='all'?' selected':''}>Tous les blocs</option><option value='month'${v.per==='month'?' selected':''}>Ce mois-ci</option></select></div>`;
   h+=l.length?l.map(p=>`<div class='it' data-a='open' data-p='${p.id}'>${item(p,S.find(x=>x.id===p.sid))}</div>`).join(''):`<p class='mut pd'>Aucun bloc ici pour l’instant.</p>`;
-  if(isDev)h+=`<div class='cd'><b>Nouveau secteur</b><div class='row'><input id='sf' type='file' accept='image/*'><button class='yb' data-a='addS'>Ajouter</button></div><div class='mut' id='st'>${esc(v.note)}</div></div>`;
+  if(isDev&&v.sn&&!sel)h+=`<div class='cd'><b>Secteur ${v.sn} : ajouter la photo</b><div class='row'><input id='sf' type='file' accept='image/*'><button class='yb' data-a='addS'>Ajouter</button></div><div class='mut' id='st'>${esc(v.note)}</div></div>`;
+  if(isDev)h+=`<div class='cd'><b>Commentaires reçus (${C.length})</b>`+(C.length?[...C].sort((x,y)=>y.t-x.t).map(c=>`<div class='it' style='cursor:default;padding-left:0'><div class='mt'><span class='mut'>${esc(c.type)} · ${new Date(c.t).toLocaleDateString('fr-FR')}</span><br>${esc(c.text)}</div><button class='tx dg' data-a='delC' data-i='${c.id}' aria-label='Supprimer'>✕</button></div>`).join(''):`<p class='mut'>Aucun pour l’instant.</p>`)+`</div>`;
   return h;
 }
 
@@ -107,8 +108,8 @@ function photo(s){
   let o='',b='';
   H.filter(h=>h.sid===s.id).forEach(h=>{
     const r=sel[h.id],on=ed&&v.hs===h.id;if(!r&&!cr&&!ed)return;
-    if(h.p){o+=r?poly(h,`stroke:${u};stroke-width:6;opacity:.45;fill:none`)+poly(h,`stroke:${col};stroke-width:3.5;fill:none`):poly(h,on?'stroke:#fcec52;stroke-width:4;fill:rgba(252,236,82,.3)':ed?'stroke:#fcec52;stroke-width:1.5;fill:rgba(255,255,255,.1)':'stroke:#fff;stroke-width:1.5;fill:rgba(255,255,255,.08)')}
-    else b+=`<i class='d' data-a='hold' data-id='${h.id}' style='left:${h.x}%;top:${h.y}%;border-color:${r?col:on?'#fcec52':'#fff'}'></i>`;
+    if(h.p){o+=r?poly(h,`stroke:${col};stroke-width:1.6;fill:${col}33`):poly(h,on?'stroke:#007BC4;stroke-width:4;fill:rgba(0,123,196,.3)':ed?'stroke:#007BC4;stroke-width:1.5;fill:rgba(255,255,255,.1)':'stroke:#fff;stroke-width:1.5;fill:rgba(255,255,255,.08)')}
+    else b+=`<i class='d' data-a='hold' data-id='${h.id}' style='left:${h.x}%;top:${h.y}%;border-color:${r?col:on?'#007BC4':'#fff'}'></i>`;
     if(r&&BG[r])b+=`<b class='rb' style='left:${h.x}%;top:${h.y}%'>${BG[r]}</b>`;
   });
   o+=(v.cand||[]).map((c,i)=>`<polygon class='c' data-a='cand' data-i='${i}' points='${c.p}'/>`).join('');
@@ -120,12 +121,12 @@ function photo(s){
 function vProb(){
   const p=P.find(x=>x.id===v.pid);if(!p){v.n='home';return vHome()}
   const s=S.find(x=>x.id===p.sid)||{},dn=(p.done||[]).includes(me.id);TT=p.name;
-  return `<div class='it' style='cursor:default'>${item(p,s)}</div><div class='pw'>${photo(s)}<div class='fl'><button class='fb' data-a='share' aria-label='Partager'>↗</button></div></div><div class='bt2'><span>✓ ${(p.done||[]).length}</span><span>${new Date(p.t).toLocaleDateString('fr-FR')}</span><span class='mut'>par ${esc(p.by)}</span>${isDev||p.uid===me.id?`<button class='tx dg' data-a='delP' data-p='${p.id}'>Supprimer</button>`:''}</div><button class='fab${dn?' on':''}' data-a='done' aria-label='Marquer comme réussi'>✓</button>`;
+  return `<div class='it' style='cursor:default'>${item(p,s)}</div><div class='pw'>${photo(s)}</div><div class='bt2'><span>✓ ${(p.done||[]).length}</span><span>${new Date(p.t).toLocaleDateString('fr-FR')}</span><span class='mut'>par ${esc(p.by)}</span>${isDev||p.uid===me.id?`<button class='tx dg' data-a='delP' data-p='${p.id}'>Supprimer</button>`:''}</div><button class='fab${dn?' on':''}' data-a='done' aria-label='Marquer comme réussi'>✓</button>`;
 }
 function vCreate(){
   const s=S.find(x=>x.id===v.sid),c=v.cr;if(!s||!c){v.n='home';return vHome()}
   TT='Nouveau bloc · Secteur '+num(s.id);
-  return photo(s)+`<div class='cd'>${swatches('cc',k=>c.color===k)}<div class='row'>`+Object.keys(LBL).map(k=>`<button class='${v.tool===k?'on':''}' data-a='tool' data-t='${k}'>${LBL[k]}</button>`).join('')+`</div><p class='mut'>Choisis la couleur, puis un type de prise et touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p><div class='row'><input id='bn' placeholder='Nom du bloc (facultatif)' value='${esc(c.name)}'><button class='yb' data-a='save'>Enregistrer</button><button data-a='back'>Annuler</button></div></div>`;
+  return photo(s)+`<div class='cd'>${swatches('cc',k=>c.color===k,1)}<div class='row'>`+Object.keys(LBL).map(k=>`<button class='${v.tool===k?'on':''}' data-a='tool' data-t='${k}'>${LBL[k]}</button>`).join('')+`</div><p class='mut'>Choisis la couleur, puis un type de prise et touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p><div class='row'><input id='bn' placeholder='Nom du bloc (facultatif)' value='${esc(c.name)}'><button class='yb' data-a='save'>Enregistrer</button><button data-a='back'>Annuler</button></div></div>`;
 }
 function vEdit(){
   const s=S.find(x=>x.id===v.sid);if(!s||!isDev){v.n='home';return vHome()}
@@ -143,7 +144,7 @@ function render(){
   if(!ready){a.innerHTML=`<p class='mut pd'>${esc(TT)}</p>`;return}
   if(document.activeElement&&document.activeElement.id==='bn')return;
   a.innerHTML={home:vHome,prob:vProb,create:vCreate,edit:vEdit}[v.n]();
-  $('#ti').textContent=TT;$('#mn').textContent=v.n==='home'?'☰':'←';$('#mm').hidden=!v.menu;
+  $('#ti').textContent=TT;$('#mn').hidden=v.n==='home';
 }
 
 async function img(f){const b=await createImageBitmap(f),k=Math.min(1,1800/b.width),c=document.createElement('canvas');c.width=b.width*k;c.height=b.height*k;c.getContext('2d').drawImage(b,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',.85))}
@@ -220,14 +221,13 @@ async function detect(){
 
 /* Actions */
 const A={
-  menu:()=>{v.menu=!v.menu},
-  mall:()=>{v.mine=false},mine:()=>{v.mine=!v.mine&&true},
-  back:()=>{if(v.n==='home'){v.menu=!v.menu;return}v.n='home';v.pid=null;v.cr=null;v.cand=null;v.hs=null;v.em='auto';v.dp=[];v.note=''},
-  sec:e=>{v.sid=v.sid===e.dataset.s?null:e.dataset.s},
-  cf:e=>{const c=e.dataset.c;v.cf=v.cf.includes(c)?v.cf.filter(x=>x!==c):[...v.cf,c]},
-  reset:()=>{v.cf=[];v.sid=null;v.mine=false},
+  mine:()=>{v.mine=!v.mine&&true},
+  back:()=>{if(v.n==='home')return;v.n='home';v.pid=null;v.cr=null;v.cand=null;v.hs=null;v.em='auto';v.dp=[];v.note=''},
+  sec:e=>{const k=+e.dataset.s;v.sn=v.sn===k?null:k},
+  cf:e=>{const c=e.dataset.c;v.cf=v.cf===c?null:c},
+  reset:()=>{v.cf=null;v.sn=null;v.mine=false},
   open:e=>{v.pid=e.dataset.p;v.n='prob'},
-  new:()=>{v.cr={sel:{},name:'',color:'violet'};v.n='create'},
+  new:()=>{v.sid=cur().id;v.cr={sel:{},name:'',color:'jaune'};v.n='create'},
   cc:e=>{v.cr.color=e.dataset.c},
   tool:e=>{v.tool=e.dataset.t},
   hold:async e=>{const id=e.dataset.id;
@@ -238,14 +238,13 @@ const A={
     const r={sid:v.sid,name:c.name.trim()||'Sans nom',color:c.color,by:me.name,uid:me.id,holds:c.sel,t:Date.now(),done:[]};
     v.cr=null;v.n='home';await db.collection('problems').add(r)},
   done:async()=>{const p=P.find(x=>x.id===v.pid),d=new Set(p.done||[]);d.has(me.id)?d.delete(me.id):d.add(me.id);await db.doc('problems/'+p.id).update({done:[...d]})},
-  share:async()=>{const p=P.find(x=>x.id===v.pid);try{if(navigator.share)await navigator.share({title:p.name,url:location.href});else{await navigator.clipboard.writeText(location.href);alert('Lien copié.')}}catch(e){}},
   delP:async e=>{await db.doc('problems/'+e.dataset.p).delete();v.n='home';v.pid=null},
-  edit:()=>{v.n='edit';v.note=''},
-  place:()=>{v.place={a:null}},
-  delS:async()=>{if(!confirm('Supprimer ce secteur, ses prises et ses blocs ?'))return;const sid=v.sid;v.sid=null;
+  edit:()=>{v.sid=cur().id;v.n='edit';v.note=''},
+  delS:async()=>{if(!confirm('Supprimer ce secteur, ses prises et ses blocs ?'))return;const sid=cur().id;v.sn=null;
     await Promise.all([db.doc('sectors/'+sid).delete(),...H.filter(h=>h.sid===sid).map(h=>db.doc('holds/'+h.id).delete()),...P.filter(p=>p.sid===sid).map(p=>db.doc('problems/'+p.id).delete())])},
   addS:async()=>{const f=$('#sf').files[0];if(!f){v.note='Choisis une photo.';return}const u=await up(f);if(!u)return;
-    const n=Math.max(0,S.length,...S.map(x=>x.n||0))+1;await db.collection('sectors').add({n,img:u});v.note='Secteur ajouté : sélectionne-le puis « Placer sur le plan ».'},
+    await db.collection('sectors').add({n:v.sn,img:u});v.note='Photo ajoutée.'},
+  delC:async e=>{await db.doc('comments/'+e.dataset.i).delete()},
   em:e=>{v.em=e.dataset.m;v.dp=[];if(v.em==='auto')v.hs=v.hs},
   redraw:()=>{v.em='draw';v.dp=[]},
   dundo:()=>{v.dp.pop()},
@@ -262,10 +261,6 @@ const A={
 };
 document.addEventListener('click',async e=>{
   if(!ready)return;
-  if(v.place&&e.target.closest('#plan')){
-    const svg=$('#plan'),pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse()),xy=[Math.round(q.x*10)/10,Math.round(q.y*10)/10];
-    if(!v.place.a)v.place.a=xy;else{await db.doc('sectors/'+v.sid).update({a:v.place.a,b:xy});v.place=null}
-    render();return}
   const t=e.target.closest('[data-a]');if(!t)return;
   const a=t.dataset.a;
   if(a==='img'){
@@ -273,11 +268,9 @@ document.addEventListener('click',async e=>{
       if(v.em==='draw'){v.dp.push([x,y]);render()}else{v.hs=null;await addHold(x,y)}}
     return}
   if(a==='delP')e.stopPropagation();
-  if(a!=='menu'&&a!=='back')v.menu=false;
   if(A[a]){await A[a](t);render()}
 });
 $('#mn').addEventListener('click',()=>{if(!ready)return;A.back();render()});
-$('#mm').addEventListener('click',()=>{v.menu=false;render()});
 document.addEventListener('input',e=>{
   if(e.target.id==='sens')v.sens=+e.target.value;if(e.target.id==='tol')v.tol=+e.target.value;
   if(e.target.id==='bn'&&v.cr)v.cr.name=e.target.value});
@@ -301,18 +294,25 @@ db={
 assets={upload:async b=>{const n=Date.now()+'-'+Math.random().toString(36).slice(2)+'.jpg';
   const{error}=await sb.storage.from('photos').upload(n,b,{contentType:'image/jpeg'});if(error)throw error;
   return{url:sb.storage.from('photos').getPublicUrl(n).data.publicUrl}}};
-function badge(){$('#dev').innerHTML=isDev?`<span class='tag'>DEV</span><button data-o='1' aria-label='Se déconnecter'>⏻</button>`:`<button data-l='1' aria-label='Compte développeur'>👤</button>`}
+$('#cb').addEventListener('click',()=>{$('#cr').textContent='';$('#cm').hidden=false;$('#cx').focus()});
+$('#cq').addEventListener('click',()=>{$('#cm').hidden=true});
+$('#cs').addEventListener('click',async()=>{const t=$('#cx').value.trim();if(!t){$('#cr').textContent='Écris un message avant d’envoyer.';return}
+  const{error}=await sb.from('kv').insert({coll:'comments',data:{type:$('#ct').value,text:t.slice(0,1000),t:Date.now()}});
+  if(error){$('#cr').textContent='Envoi impossible : '+error.message;return}
+  $('#cx').value='';$('#cr').textContent='Merci, message envoyé !';setTimeout(()=>{$('#cm').hidden=true},1200)});
+function badge(){$('#dev').innerHTML=isDev?`<span class='tag'>DEV</span><button data-o='1' aria-label='Se déconnecter'>⏻</button>`:`<button data-l='1' class='dv' aria-label='Mode développeur'>&lt;/&gt;</button>`}
 $('#dev').addEventListener('click',async e=>{
   if(e.target.dataset.l){const f=$('#lf');f.style.display=f.style.display==='none'?'flex':'none'}
   if(e.target.dataset.o)await sb.auth.signOut()});
 $('#lf').addEventListener('submit',async e=>{e.preventDefault();
   const{error}=await sb.auth.signInWithPassword({email:$('#le').value,password:$('#lp').value});
   if(error)alert('Connexion refusée : '+error.message);else $('#lf').style.display='none'});
+function subC(){if(isDev&&!subC.d){subC.d=1;db.collection('comments').onSnapshot(q=>{C=snap(q);render()},e=>console.error(e))}}
 (async()=>{
   try{let id=localStorage.getItem('u');if(!id){id=crypto.randomUUID();localStorage.setItem('u',id)}me={id,name:localStorage.getItem('n')||'Anonyme'}}
   catch(e){me={id:'anon-'+Math.random(),name:'Anonyme'}}
-  isDev=!!(await sb.auth.getSession()).data.session;badge();
-  sb.auth.onAuthStateChange((_,x)=>{isDev=!!x;if(!isDev&&v.n==='edit')v.n='home';badge();render()});
+  isDev=!!(await sb.auth.getSession()).data.session;badge();subC();
+  sb.auth.onAuthStateChange((_,x)=>{isDev=!!x;if(!isDev&&v.n==='edit')v.n='home';badge();subC();render()});
   ready=true;
   const er=e=>{console.error(e)};
   db.collection('sectors').onSnapshot(q=>{S=snap(q);render()},er);
