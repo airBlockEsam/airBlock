@@ -58,7 +58,7 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 <script src="config.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-setTimeout(()=>{const p=$('#sp');p.classList.add('o');setTimeout(()=>p.remove(),400)},1000);
+setTimeout(()=>{const p=$('#sp');p.classList.add('o');setTimeout(()=>p.remove(),400)},2000);
 const nm=p=>p.name==='Sans nom'?'':p.name||'';
 const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CL={jaune:'#f2d216',orange:'#f08a1c',vert:'#34801f',bleu:'#4287e0',rouge:'#cc2b1c',blanc:'#ffffff',noir:'#000000',violet:'#7f35d4'};
