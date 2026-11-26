@@ -46,6 +46,12 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 .fab.on{background:#2e9a3f}
 #cm{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}#cm[hidden]{display:none}.mb{background:#fff;border-radius:8px;padding:18px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:10px}.mb textarea{font:inherit;padding:9px;border:1px solid var(--bd);border-radius:6px;resize:vertical}
 #sp{position:fixed;inset:0;z-index:50;background:#ffffff;transition:opacity .35s}#sp.o{opacity:0;pointer-events:none}#sp img{width:100%;height:100%;object-fit:contain;display:block}@media (prefers-reduced-motion:reduce){#sp{transition:none}}
+.mt{flex:1;min-width:0}.nm{font-weight:500}.by{color:var(--mut);font-size:13px}
+.tgs{display:flex;flex-wrap:wrap;gap:0 8px;height:1.35em;overflow:hidden;font-size:12px;line-height:1.35;color:#007BC4}.tgs span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tgc{display:flex;flex-wrap:wrap;margin:6px 0}.tg{border-radius:99px;padding:5px 12px;font-size:14px;box-shadow:inset 0 0 0 1px #c8c8c8;margin:0 6px 6px 0}.tg.on{background:#007BC4;color:#fff;box-shadow:none;outline:0}
+.tf{border:0;background:none;font-weight:700;letter-spacing:.5px;color:#007BC4;max-width:55%;padding:10px 0;text-align:right}
+.tgf{flex:1;display:flex;flex-wrap:wrap;gap:4px 10px;color:#007BC4}
+.ph.sd .bg{filter:saturate(.4)}.ph img.fg{position:absolute;inset:0;height:100%;clip-path:url(#cp);pointer-events:none}
 .bt2{display:flex;gap:18px;align-items:center;padding:14px 16px;font-weight:500}
 </style></head>
 <body>
@@ -58,13 +64,15 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 <script src="config.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-setTimeout(()=>{const p=$('#sp');p.classList.add('o');setTimeout(()=>p.remove(),400)},2000);
+setTimeout(()=>{const p=$('#sp');p.classList.add('o');setTimeout(()=>p.remove(),400)},1000);
+const allTags=()=>{const m={};P.forEach(p=>(p.tags||[]).forEach(t=>m[t]=(m[t]||0)+1));return Object.keys(m).sort((a,b)=>m[b]-m[a]||a.localeCompare(b,'fr'))};
+const normTag=t=>String(t||'').replace(/[#,;]/g,' ').replace(/\s+/g,' ').trim().toLowerCase().slice(0,24);
 const nm=p=>p.name==='Sans nom'?'':p.name||'';
 const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CL={jaune:'#f2d216',orange:'#f08a1c',vert:'#34801f',bleu:'#4287e0',rouge:'#cc2b1c',blanc:'#ffffff',noir:'#000000',violet:'#7f35d4'};
 const LBL={hand:'Main',start:'Départ',foot:'Pied',finish:'Fin'},BG={start:'D',foot:'P',finish:'F'};
 let db,assets,isDev=false,me={id:null,name:'Anonyme'},S=[],H=[],P=[],C=[],ready=false,TT='Blocs du club';
-let v={n:'home',sid:null,pid:null,cf:null,sn:null,mine:false,per:'all',tool:'hand',cr:null,em:'auto',dp:[],hs:null,cand:null,sens:45,tol:40,note:'',place:null,menu:false};
+let v={n:'home',sid:null,pid:null,cf:null,sn:null,mine:false,per:'all',tool:'hand',cr:null,em:'auto',dp:[],hs:null,cand:null,sens:60,tf:null,tol:40,note:'',place:null,menu:false};
 const snap=q=>q.docs.map(d=>Object.assign({id:d.id},d.data()));
 const secs=()=>[...S].sort((a,b)=>(a.n||1e9)-(b.n||1e9)||String(a.id).localeCompare(String(b.id)));
 const num=id=>{const s=S.find(x=>x.id===id);return s&&s.n||'?'};
@@ -84,18 +92,23 @@ function thumb(s,p){
   return `<span class='th' style='border-color:${p.color==='blanc'?'#fff':rc(p.color)};box-shadow:0 0 0 1px #999'>${s&&s.img&&h?`<img src='${esc(s.img)}' alt='' style='left:50%;top:50%;width:420%;transform:translate(-${h.x}%,-${h.y}%)'>`:''}</span>`;
 }
 function item(p,s){
-  return `<span class='sn' style='color:${p.color==='blanc'||p.color==='jaune'?'#888':rc(p.color)}'>${num(p.sid)}</span>${thumb(s,p)}<div class='mt'>${esc(nm(p))}</div>${plan(num(p.sid),true)}`;
+  const d=new Date(p.t),dj=d.getDate()===1?'1er':d.getDate(),tg=p.tags||[];
+  const when='le '+dj+' '+d.toLocaleDateString('fr-FR',{month:'long'})+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'');
+  return `<span class='sn' style='color:${p.color==='blanc'||p.color==='jaune'?'#888':rc(p.color)}'>${num(p.sid)}</span>${thumb(s,p)}<div class='mt'>${nm(p)?`<div class='nm'>${esc(nm(p))}</div>`:''}<div class='by'>${p.by?'par '+esc(p.by)+' ':''}${when}</div>${tg.length?`<div class='tgs'>${tg.map(t=>`<span>#${esc(t)}</span>`).join('')}</div>`:''}</div>${plan(num(p.sid),true)}`;
 }
+function tagSel(){const tg=allTags();return tg.length?`<select id='tf' class='tf' aria-label='Filtrer par mot-clé'><option value=''>MOTS-CLÉS</option>${tg.map(t=>`<option value='${esc(t)}'${v.tf===t?' selected':''}>#${esc(t)}</option>`).join('')}</select>`:''}
+function tagsUI(c){const tg=[...new Set([...c.tags,...allTags()])];
+  return `<div class='mut'>Mots-clés (facultatif)</div><div class='tgc'>${tg.map(t=>`<button class='tg${c.tags.includes(t)?' on':''}' data-a='tg' data-t='${esc(t)}' aria-pressed='${c.tags.includes(t)}'>#${esc(t)}</button>`).join('')}</div><div class='row'><input id='tn' placeholder='Nouveau mot-clé (ex. à doigts)' maxlength='24'><button data-a='addtg'>+ Ajouter</button></div>`}
 function swatches(act,cur){return `<div class='cb'>`+Object.keys(CL).map(k=>`<button data-a='${act}' data-c='${k}' aria-label='${k}' class='${cur(k)?'on':''}' style='background:${CL[k]}'></button>`).join('')+`</div>`}
 
 function vHome(){
   const sel=cur();
-  const hl=v.cf?new Set(P.filter(p=>p.color===v.cf).map(p=>num(p.sid))):null;
-  const l=P.filter(p=>(!v.sn||(sel&&p.sid===sel.id))&&(!v.cf||p.color===v.cf)&&(v.per==='all'||p.t>Date.now()-2592e6)).sort((a,b)=>b.t-a.t);
+  const hl=(v.cf||v.tf)?new Set(P.filter(p=>(!v.cf||p.color===v.cf)&&(!v.tf||(p.tags||[]).includes(v.tf))).map(p=>num(p.sid))):null;
+  const l=P.filter(p=>(!v.sn||(sel&&p.sid===sel.id))&&(!v.cf||p.color===v.cf)&&(!v.tf||(p.tags||[]).includes(v.tf))&&(v.per==='all'||p.t>Date.now()-2592e6)).sort((a,b)=>b.t-a.t);
   TT=l.length+' bloc'+(l.length>1?'s':'')+(v.sn?' · Secteur '+v.sn:'');
   let h=`<div class='cd'>${plan(v.sn,false,hl)}`;
   h+=`<div class='sr'><span>${v.sn?'Secteur '+v.sn:'Touche un secteur'}</span>${v.sn?`<button class='x' data-a='sec' data-s='${v.sn}' aria-label='Désélectionner'>✕</button>`:''}</div>`;
-  h+=swatches('cf',k=>v.cf===k,v.cf)+`<div class='ft'><button class='tx' data-a='reset'>RÉINITIALISER</button></div></div>`;
+  h+=swatches('cf',k=>v.cf===k,v.cf)+`<div class='ft'><button class='tx' data-a='reset'>RÉINITIALISER</button>${tagSel()}</div></div>`;
   if(v.sn)h+=`<div class='row'>${sel?`<button class='yb' data-a='new'>+ Nouveau bloc</button>`:`<span class='mut'>Pas encore de photo pour ce secteur.</span>`}${isDev&&sel?`<button data-a='edit'>Photo et prises</button><button class='dg' data-a='delS'>Supprimer</button>`:''}</div>`;
   h+=`<div class='lh'><select id='per' aria-label='Période'><option value='all'${v.per==='all'?' selected':''}>Tous les blocs</option><option value='month'${v.per==='month'?' selected':''}>Ce mois-ci</option></select></div>`;
   h+=l.length?l.map(p=>`<div class='it' data-a='open' data-p='${p.id}'>${item(p,S.find(x=>x.id===p.sid))}</div>`).join(''):`<p class='mut pd'>Aucun bloc ici pour l’instant.</p>`;
@@ -119,18 +132,21 @@ function photo(s){
   o+=(v.cand||[]).map((c,i)=>`<polygon class='c' data-a='cand' data-i='${i}' points='${c.p}'/>`).join('');
   const dr=ed&&v.em==='draw';
   if(dr&&v.dp.length){o+=`<polygon class='dl' style='pointer-events:none' points='${v.dp.map(q=>q.join(',')).join(' ')}'/>`;b+=v.dp.map(q=>`<i class='dp' style='left:${q[0]}%;top:${q[1]}%'></i>`).join('')}
-  return `<div class='ph${dr?' dm':''}' data-a='img'><img src='${esc(s.img)}' alt='Photo du secteur ${num(s.id)}'><svg class='ov' viewBox='0 0 100 100' preserveAspectRatio='none'>${o}</svg>${b}</div>`;
+  let fg='';
+  if(p){const cs=H.filter(h=>sel[h.id]).map(h=>h.p?`<polygon points='${h.p.split(' ').map(q=>q.split(',').map(z=>(z/100).toFixed(4)).join(',')).join(' ')}'/>`:`<ellipse cx='${h.x/100}' cy='${h.y/100}' rx='.03' ry='.03'/>`).join('');
+    fg=`<svg width='0' height='0' style='position:absolute' aria-hidden='true'><clipPath id='cp' clipPathUnits='objectBoundingBox'>${cs}</clipPath></svg><img class='fg' src='${esc(s.img)}' alt=''>`}
+  return `<div class='ph${dr?' dm':''}${p?' sd':''}' data-a='img'><img class='bg' src='${esc(s.img)}' alt='Photo du secteur ${num(s.id)}'>${fg}<svg class='ov' viewBox='0 0 100 100' preserveAspectRatio='none'>${o}</svg>${b}</div>`;
 }
 
 function vProb(){
   const p=P.find(x=>x.id===v.pid);if(!p){v.n='home';return vHome()}
   const s=S.find(x=>x.id===p.sid)||{};TT=nm(p)||'Secteur '+num(p.sid);
-  return `<div class='it' style='cursor:default'>${item(p,s)}</div><div class='pw'>${photo(s)}</div><div class='bt2'><span>${new Date(p.t).toLocaleDateString('fr-FR')}</span><span class='mut'>par ${esc(p.by)}</span>${isDev||p.uid===me.id?`<button class='tx dg' data-a='delP' data-p='${p.id}'>Supprimer</button>`:''}</div>`;
+  return `<div class='it' style='cursor:default'>${item(p,s)}</div><div class='pw'>${photo(s)}</div><div class='bt2'><div class='tgf'>${(p.tags||[]).map(t=>`<span>#${esc(t)}</span>`).join('')}</div>${isDev||p.uid===me.id?`<button class='tx dg' data-a='delP' data-p='${p.id}'>Supprimer</button>`:''}</div>`;
 }
 function vCreate(){
   const s=S.find(x=>x.id===v.sid),c=v.cr;if(!s||!c){v.n='home';return vHome()}
   TT='Nouveau bloc · Secteur '+num(s.id);
-  return photo(s)+`<div class='cd'>${swatches('cc',k=>c.color===k,1)}<div class='row'>`+Object.keys(LBL).map(k=>`<button class='${v.tool===k?'on':''}' data-a='tool' data-t='${k}'>${LBL[k]}</button>`).join('')+`</div><p class='mut'>Choisis la couleur, puis un type de prise et touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p><div class='row'><input id='bw' placeholder='Ton prénom (obligatoire)' autocomplete='off' maxlength='30' value='${esc(c.by||'')}'><input id='bn' placeholder='Nom du bloc (facultatif)' value='${esc(c.name)}'><button class='yb' data-a='save'>Enregistrer</button><button data-a='back'>Annuler</button></div></div>`;
+  return photo(s)+`<div class='cd'>${swatches('cc',k=>c.color===k,1)}<div class='row'>`+Object.keys(LBL).map(k=>`<button class='${v.tool===k?'on':''}' data-a='tool' data-t='${k}'>${LBL[k]}</button>`).join('')+`</div><p class='mut'>Choisis la couleur, puis un type de prise et touche les prises du bloc (re-touche pour retirer). ${Object.keys(c.sel).length} prise(s).</p>${tagsUI(c)}<div class='row'><input id='bw' placeholder='Ton prénom (obligatoire)' autocomplete='off' maxlength='30' value='${esc(c.by||'')}'><input id='bn' placeholder='Nom du bloc (facultatif)' value='${esc(c.name)}'><button class='yb' data-a='save'>Enregistrer</button><button data-a='back'>Annuler</button></div></div>`;
 }
 function vEdit(){
   const s=S.find(x=>x.id===v.sid);if(!s||!isDev){v.n='home';return vHome()}
@@ -146,7 +162,7 @@ function vEdit(){
 function render(){
   const a=$('#app');
   if(!ready){a.innerHTML=`<p class='mut pd'>${esc(TT)}</p>`;return}
-  if(document.activeElement&&['bn','bw'].includes(document.activeElement.id))return;
+  if(document.activeElement&&['bn','bw','tn'].includes(document.activeElement.id))return;
   a.innerHTML={home:vHome,prob:vProb,create:vCreate,edit:vEdit}[v.n]();
   $('#ti').textContent=TT;$('#mn').hidden=v.n==='home';
 }
@@ -196,14 +212,20 @@ async function detect(){
   const s=S.find(z=>z.id===v.sid);
   try{
     const P=await pix(s),w=P.w,h=P.h,d=P.d,N=w*h,W=w+1;
-    const R=Math.round(Math.max(w,h)/14),I=[0,1,2].map(()=>new Float64Array(W*(h+1)));
-    for(let c=0;c<3;c++){const J=I[c];for(let y=0;y<h;y++){let r=0;for(let x=0;x<w;x++){r+=d[(y*w+x)*4+c];J[(y+1)*W+x+1]=J[y*W+x+1]+r}}}
-    const t=95-v.sens*.8,m=new Uint8Array(N);
+    // luminance + 2 axes de couleur : l'écart au mur local marche aussi sur un mur rouge ou jaune
+    const ch=[new Float32Array(N),new Float32Array(N),new Float32Array(N)];
+    for(let i=0;i<N;i++){const r=d[i*4],g=d[i*4+1],b=d[i*4+2];ch[0][i]=(r+g+b)/3;ch[1][i]=(r-g)*.8;ch[2][i]=((r+g)/2-b)*.8}
+    const R=Math.round(Math.max(w,h)/14);
+    const I=ch.map(c=>{const J=new Float64Array(W*(h+1));for(let y=0;y<h;y++){let r=0;for(let x=0;x<w;x++){r+=c[y*w+x];J[(y+1)*W+x+1]=J[y*W+x+1]+r}}return J});
+    const q=new Float32Array(N),hist=new Uint32Array(500);
     for(let y=0;y<h;y++){const y0=Math.max(0,y-R),y1=Math.min(h,y+R+1);
-      for(let x=0;x<w;x++){const x0=Math.max(0,x-R),x1=Math.min(w,x+R+1),a=(y1-y0)*(x1-x0),i=(y*w+x)*4;let q=0;
-        for(let c=0;c<3;c++){const J=I[c],mu=(J[y1*W+x1]-J[y0*W+x1]-J[y1*W+x0]+J[y0*W+x0])/a;q+=(d[i+c]-mu)**2}
-        q=Math.sqrt(q);const mx=Math.max(d[i],d[i+1],d[i+2]),mn=Math.min(d[i],d[i+1],d[i+2]);
-        if(q>t||(mx>60&&(mx-mn)/mx>.35&&q>t*.5))m[y*w+x]=1}}
+      for(let x=0;x<w;x++){const x0=Math.max(0,x-R),x1=Math.min(w,x+R+1),a=(y1-y0)*(x1-x0),i=y*w+x;let t=0;
+        for(let c=0;c<3;c++){const J=I[c],mu=(J[y1*W+x1]-J[y0*W+x1]-J[y1*W+x0]+J[y0*W+x0])/a;t+=(ch[c][i]-mu)**2}
+        t=Math.sqrt(t);q[i]=t;hist[Math.min(499,t|0)]++}}
+    // seuil adaptatif : proportionnel au « bruit » médian du mur (texture, faible contraste)
+    let acc=0,med=0;for(;med<499;med++){acc+=hist[med];if(acc>=N*.5)break}
+    const t=Math.max(7,(med+2)*(1.5+(90-v.sens)/20)),m=new Uint8Array(N);
+    for(let i=0;i<N;i++)if(q[i]>t)m[i]=1;
     const e=new Uint8Array(N);
     for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;if(m[i]&&m[i-1]&&m[i+1]&&m[i-w]&&m[i+w])e[i]=1}
     const vis=new Uint8Array(N),sc=new Uint8Array(N),out=[];
@@ -211,14 +233,14 @@ async function detect(){
       if(!e[i]||vis[i])continue;
       const st=[i],px=[];vis[i]=1;let x0=w,x1=0,y0=h,y1=0,sx=0,sy=0;
       while(st.length){const p=st.pop(),x=p%w,y=(p/w)|0;px.push(p);sx+=x;sy+=y;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
-        for(const q of [p-1,p+1,p-w,p+w])if(e[q]&&!vis[q]){vis[q]=1;st.push(q)}}
+        for(const q2 of [p-1,p+1,p-w,p+w])if(e[q2]&&!vis[q2]){vis[q2]=1;st.push(q2)}}
       const a=px.length,bw=x1-x0+1,bh=y1-y0+1;
       if(a<N*.00015||a>N*.02||Math.max(bw,bh)>4*Math.min(bw,bh)||a<.3*bw*bh||x0<2||y0<2||x1>w-3||y1>h-3)continue;
-      const tmp=[];px.forEach(p=>{for(const q of [p,p-1,p+1,p-w,p+w])if(m[q]&&!sc[q]){sc[q]=1;tmp.push(q)}});
+      const tmp=[];px.forEach(p=>{for(const q2 of [p,p-1,p+1,p-w,p+w])if(m[q2]&&!sc[q2]){sc[q2]=1;tmp.push(q2)}});
       const cx=sx/a,cy=sy/a;out.push({x:Math.round(cx/w*1000)/10,y:Math.round(cy/h*1000)/10,p:outline(sc,w,h,cx,cy)});
-      tmp.forEach(q=>sc[q]=0);
+      tmp.forEach(q2=>sc[q2]=0);
     }
-    v.note=out.length?out.length+' prises détectées : écarte les erreurs puis valide.':'Aucune prise détectée : change la sensibilité.';
+    v.note=out.length?out.length+' prises détectées : écarte les erreurs puis valide.':'Aucune prise détectée : augmente la sensibilité.';
     return out;
   }catch(e){v.note='Analyse impossible : '+(e.message||e);return null}
 }
@@ -228,9 +250,11 @@ const A={
   back:()=>{if(v.n==='home')return;v.n='home';v.pid=null;v.cr=null;v.cand=null;v.hs=null;v.em='auto';v.dp=[];v.note=''},
   sec:e=>{const k=+e.dataset.s;v.sn=v.sn===k?null:k},
   cf:e=>{const c=e.dataset.c;v.cf=v.cf===c?null:c},
-  reset:()=>{v.cf=null;v.sn=null},
+  reset:()=>{v.cf=null;v.sn=null;v.tf=null},
   open:e=>{v.pid=e.dataset.p;v.n='prob'},
-  new:()=>{v.sid=cur().id;v.cr={sel:{},name:'',by:'',color:'jaune'};v.n='create'},
+  new:()=>{v.sid=cur().id;v.cr={sel:{},name:'',by:'',tags:[],color:'jaune'};v.n='create'},
+  tg:e=>{const t=e.dataset.t,a=v.cr.tags;v.cr.tags=a.includes(t)?a.filter(x=>x!==t):[...a,t]},
+  addtg:()=>{const t=normTag($('#tn').value);if(t&&!v.cr.tags.includes(t)&&v.cr.tags.length<8)v.cr.tags.push(t)},
   cc:e=>{v.cr.color=e.dataset.c},
   tool:e=>{v.tool=e.dataset.t},
   hold:async e=>{const id=e.dataset.id;
@@ -238,7 +262,8 @@ const A={
     else if(v.n==='edit'){v.hs=v.hs===id?null:id}},
   save:async()=>{const c=v.cr;if(!Object.keys(c.sel).length){alert('Ajoute au moins une prise.');return}
     if(!(c.by||'').trim()){alert('Indique ton prénom.');return}
-    const r={sid:v.sid,name:c.name.trim(),color:c.color,by:c.by.trim().slice(0,30),uid:me.id,holds:c.sel,t:Date.now()};
+    const pend=normTag($('#tn')&&$('#tn').value);if(pend&&!c.tags.includes(pend))c.tags.push(pend);
+    const r={sid:v.sid,name:c.name.trim(),color:c.color,by:c.by.trim().slice(0,30),uid:me.id,holds:c.sel,tags:c.tags,t:Date.now()};
     v.cr=null;v.n='home';await db.collection('problems').add(r)},
   delP:async e=>{await db.doc('problems/'+e.dataset.p).delete();v.n='home';v.pid=null},
   edit:()=>{v.sid=cur().id;v.n='edit';v.note=''},
@@ -273,10 +298,12 @@ document.addEventListener('click',async e=>{
   if(A[a]){await A[a](t);render()}
 });
 $('#mn').addEventListener('click',()=>{if(!ready)return;A.back();render()});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='tn'&&v.cr){e.preventDefault();A.addtg();render();const t=$('#tn');if(t)t.focus()}});
 document.addEventListener('input',e=>{
   if(e.target.id==='sens')v.sens=+e.target.value;if(e.target.id==='tol')v.tol=+e.target.value;
   if(e.target.id==='bn'&&v.cr)v.cr.name=e.target.value;if(e.target.id==='bw'&&v.cr)v.cr.by=e.target.value});
 document.addEventListener('change',async e=>{
+  if(e.target.id==='tf'){v.tf=e.target.value||null;render()}
   if(e.target.id==='per'){v.per=e.target.value;render()}
   if(e.target.id==='rf'&&e.target.files[0]){const u=await up(e.target.files[0]);if(u)await db.doc('sectors/'+v.sid).update({img:u})}});
 
