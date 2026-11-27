@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Blocs du club</title>
+<title>airBlock</title>
 <style>
 :root{--y:#007BC4;--bd:#e3e3e3;--mut:#6f6f6f;color-scheme:light}
 *{box-sizing:border-box}
 body{margin:0;background:#f2f2f2;color:#1b1b1b;font:16px/1.4 Roboto,system-ui,-apple-system,"Segoe UI",sans-serif}
 header{position:sticky;top:0;z-index:5;background:var(--y);display:flex;align-items:center;gap:14px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 header{color:#fff}header button{background:none;box-shadow:none;border:0;font-size:26px;line-height:1;padding:4px;color:#fff}.dv{font:700 16px ui-monospace,Menlo,monospace!important}
+#ti.brand{position:absolute;left:50%;transform:translateX(-50%);flex:none;font-size:27px;font-weight:800;letter-spacing:-.5px;pointer-events:none}#ti.brand span{font-weight:300}
 #ti{flex:1;font-size:19px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tag{font-size:11px;background:#fff;color:#007BC4;padding:2px 7px;border-radius:9px;margin-right:6px}
 #lf{display:none;gap:8px;flex-wrap:wrap;padding:8px 16px;background:#fff}
@@ -22,7 +23,7 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 .sr{display:flex;justify-content:space-between;align-items:center;font-size:21px;margin:8px 0}
 .x{background:none;box-shadow:none;font-size:26px;padding:0 6px}
 .cb{display:flex;align-items:center;gap:0;margin:12px 0}.cb button{flex:1;height:30px;border-radius:0;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);transition:flex .15s,height .15s,filter .15s}
-.cb.f button{height:24px;filter:saturate(.45)}.cb.f button.on{flex:1.6;height:42px;filter:none;outline:0}
+.cb button.on{outline:0}.cb.f button{height:22px;filter:saturate(.35) brightness(1.05)}.cb.f button.on{flex:1.8;height:44px;filter:none}
 .ft{display:flex;justify-content:space-between}.tx{background:none;box-shadow:none;font-weight:700;letter-spacing:.5px;padding:10px 4px}.tx.on{text-decoration:underline}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 14px}.cd .row{margin:10px 0}
 .yb{background:var(--y);color:#fff;font-weight:700}.dg{color:#c0261a}.on{outline:2px solid #000}
@@ -39,7 +40,7 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 .dm polygon,.dm .d{pointer-events:none}
 .d{position:absolute;width:30px;height:30px;border-radius:50%;transform:translate(-50%,-50%);border:3px solid #fff}
 .dp{position:absolute;width:10px;height:10px;border-radius:50%;background:#007BC4;border:2px solid #000;transform:translate(-50%,-50%);pointer-events:none}
-.rb{position:absolute;background:#000;color:#fff;font:700 12px/1 system-ui;min-width:22px;height:22px;padding:0 6px;border-radius:11px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.rb{position:absolute;background:#000;color:#fff;font:700 12px/1 system-ui;width:22px;height:22px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none}.rb.t{width:34px;height:34px;font-size:11px;letter-spacing:-.3px}.rb.mv{pointer-events:auto;cursor:grab;touch-action:none;box-shadow:0 0 0 2px #fff}
 .fl{position:absolute;right:14px;top:34%;display:flex;flex-direction:column;gap:12px}
 .fb{width:48px;height:48px;border-radius:50%;background:var(--y);font-size:20px;padding:0}
 .fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:#bdbdbd;font-size:28px;padding:0;color:#fff}
@@ -56,7 +57,7 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 </style></head>
 <body>
 <div id="sp" aria-hidden="true"><img src="splash.jpg" alt=""></div>
-<header><button id="cb" aria-label="Laisser un commentaire"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg></button><button id="mn" aria-label="Retour" hidden>←</button><span id="ti">Blocs du club</span><span id="dev"></span></header>
+<header><button id="cb" aria-label="Laisser un commentaire"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg></button><button id="mn" aria-label="Retour" hidden>←</button><span id="ti" class="brand"><span>air</span>Block</span><span id="dev"></span></header>
 <form id="lf"><input id="le" type="email" placeholder="Email" autocomplete="username"><input id="lp" type="password" placeholder="Mot de passe" autocomplete="current-password"><button class="yb">Connexion</button></form>
 <div id="cm" hidden><div class="mb" role="dialog" aria-label="Laisser un commentaire"><b>Ton avis nous aide</b><p class="mut">Suggestion, idée ou bug : écris-le ici. Le message est anonyme, aucun nom ni identifiant n’est enregistré.</p><select id="ct" aria-label="Type de message"><option>Suggestion</option><option>Bug</option><option>Autre</option></select><textarea id="cx" rows="5" maxlength="1000" placeholder="Ton message…"></textarea><div class="row" style="margin:8px 0 0"><button class="yb" id="cs">Envoyer</button><button id="cq">Fermer</button></div><div class="mut" id="cr" role="status"></div></div></div>
 <main id="app"><p class="mut pd">Chargement…</p></main>
@@ -100,7 +101,7 @@ function item(p,s){
 function tagSel(){const tg=allTags();return tg.length?`<select id='tf' class='tf' aria-label='Filtrer par style'><option value=''>STYLE</option>${tg.map(t=>`<option value='${esc(t)}'${v.tf===t?' selected':''}>#${esc(t)}</option>`).join('')}</select>`:''}
 function tagsUI(c){const tg=[...new Set([...c.tags,...allTags()])];
   return `<div class='mut'>Mots-clés (facultatif)</div><div class='tgc'>${tg.map(t=>`<button class='tg${c.tags.includes(t)?' on':''}' data-a='tg' data-t='${esc(t)}' aria-pressed='${c.tags.includes(t)}'>#${esc(t)}</button>`).join('')}</div><div class='row'><input id='tn' placeholder='Nouveau mot-clé (ex. à doigts)' maxlength='24'><button data-a='addtg'>+ Ajouter</button></div>`}
-function swatches(act,cur){return `<div class='cb'>`+Object.keys(CL).map(k=>`<button data-a='${act}' data-c='${k}' aria-label='${k}' class='${cur(k)?'on':''}' style='background:${CL[k]}'></button>`).join('')+`</div>`}
+function swatches(act,cur,f){return `<div class='cb${f?' f':''}'>`+Object.keys(CL).map(k=>`<button data-a='${act}' data-c='${k}' aria-label='${k}' aria-pressed='${!!cur(k)}' class='${cur(k)?'on':''}' style='background:${CL[k]}'></button>`).join('')+`</div>`}
 
 function vHome(){
   const sel=cur();
@@ -110,7 +111,7 @@ function vHome(){
   if(v.so==='op')l.sort((a,b)=>cnt[key(b)]-cnt[key(a)]||key(a).localeCompare(key(b),'fr')||b.t-a.t);
   TT=l.length+' bloc'+(l.length>1?'s':'')+(v.sn?' · Secteur '+v.sn:'');
   let h=`<div class='cd'>${plan(v.sn,false,hl)}`;
-  h+=`<div class='sr'><span>${v.sn?'Secteur '+v.sn:'Touche un secteur'}</span>${v.sn?`<button class='x' data-a='sec' data-s='${v.sn}' aria-label='Désélectionner'>✕</button>`:''}</div>`;
+  h+=`<div class='sr'><span>${v.sn?'Secteur '+v.sn:'Touche un secteur'} <small class='mut'>· ${l.length} bloc${l.length>1?'s':''}</small></span>${v.sn?`<button class='x' data-a='sec' data-s='${v.sn}' aria-label='Désélectionner'>✕</button>`:''}</div>`;
   h+=swatches('cf',k=>v.cf===k,v.cf)+`<div class='ft'><button class='tx' data-a='reset'>RÉINITIALISER</button>${tagSel()}</div></div>`;
   if(v.sn)h+=`<div class='row'>${sel?`<button class='yb' data-a='new'>+ Nouveau bloc</button>`:`<span class='mut'>Pas encore de photo pour ce secteur.</span>`}${isDev&&sel?`<button data-a='edit'>Photo et prises</button><button class='dg' data-a='delS'>Supprimer</button>`:''}</div>`;
   h+=`<div class='lh'><select id='per' aria-label='Période'><option value='all'${v.per==='all'?' selected':''}>Tous les blocs</option><option value='month'${v.per==='month'?' selected':''}>Ce mois-ci</option></select><select id='so' aria-label='Tri'><option value='date'${v.so==='date'?' selected':''}>Plus récents</option><option value='op'${v.so==='op'?' selected':''}>Par ouvreur</option></select></div>`;
@@ -131,7 +132,8 @@ function photo(s){
     if(h.p){o+=r?poly(h,`stroke:${col};stroke-width:1.6;fill:${col}33`):poly(h,on?'stroke:#007BC4;stroke-width:4;fill:rgba(0,123,196,.3)':ed?'stroke:#007BC4;stroke-width:1.5;fill:rgba(255,255,255,.1)':'stroke:#fff;stroke-width:1.5;fill:rgba(255,255,255,.08)')}
     else b+=`<i class='d' data-a='hold' data-id='${h.id}' style='left:${h.x}%;top:${h.y}%;border-color:${r?col:on?'#007BC4':'#fff'}'></i>`;
     if(r&&BG[r]){let x0=h.x-2,x1=h.x+2;if(h.p){const xs=h.p.split(' ').map(q=>+q.split(',')[0]);x0=Math.min(...xs);x1=Math.max(...xs)}
-      const lf=x1>84;b+=`<b class='rb' style='left:${lf?x0:x1}%;top:${h.y}%;transform:translate(${lf?'calc(-100% - 5px)':'5px'},-50%)'>${BG[r]}</b>`}
+      const lf=x1>84,pos=((cr?cr.lo:p&&p.lo)||{})[h.id],mv=cr?' mv':'';
+      b+=`<b class='rb${r==='finish'?' t':''}${mv}' data-hid='${h.id}' style='${pos?`left:${pos[0]}%;top:${pos[1]}%;transform:translate(-50%,-50%)`:`left:${lf?x0:x1}%;top:${h.y}%;transform:translate(${lf?'calc(-100% - 5px)':'5px'},-50%)`}'>${BG[r]}</b>`}
   });
   o+=(v.cand||[]).map((c,i)=>`<polygon class='c' data-a='cand' data-i='${i}' points='${c.p}'/>`).join('');
   const dr=ed&&v.em==='draw';
@@ -150,7 +152,7 @@ function vProb(){
 function vCreate(){
   const s=S.find(x=>x.id===v.sid),c=v.cr;if(!s||!c){v.n='home';return vHome()}
   TT=(c.id?'Modifier le bloc':'Nouveau bloc')+' · Secteur '+num(s.id);
-  return photo(s)+`<div class='cd'>${swatches('cc',k=>c.color===k,1)}<div class='row'>`+Object.keys(LBL).map(k=>`<button class='${v.tool===k?'on':''}' aria-pressed='${v.tool===k}' data-a='tool' data-t='${k}'>${LBL[k]}</button>`).join('')+`</div><p class='mut'>Choisis la couleur, puis touche les prises du bloc (re-touche pour retirer). Pour un départ, un pied seulement ou un top, choisis d’abord le type puis touche la prise ; re-touche le type pour revenir aux prises normales. ${Object.keys(c.sel).length} prise(s).</p>${tagsUI(c)}${isDev?`<div class='row'><label class='mut'>Date <input id='bd' type='date' value='${esc(c.date||'')}'></label></div>`:''}<div class='row'><input id='bw' placeholder='Ton prénom (obligatoire)' autocomplete='off' maxlength='30' value='${esc(c.by||'')}'><input id='bn' placeholder='Nom du bloc (facultatif)' value='${esc(c.name)}'><button class='yb' data-a='save'>${c.id?'Enregistrer les modifications':'Enregistrer'}</button><button data-a='cancel'>Annuler</button></div></div>`;
+  return photo(s)+`<div class='cd'>${swatches('cc',k=>c.color===k,1)}<div class='row'>`+Object.keys(LBL).map(k=>`<button class='${v.tool===k?'on':''}' aria-pressed='${v.tool===k}' data-a='tool' data-t='${k}'>${LBL[k]}</button>`).join('')+`</div><p class='mut'>Choisis la couleur, puis touche les prises du bloc (re-touche pour retirer). Pour un départ, un pied seulement ou un top, choisis d’abord le type puis touche la prise ; re-touche le type pour revenir aux prises normales. Fais glisser les pastilles D, P et TOP pour les replacer si elles gênent. ${Object.keys(c.sel).length} prise(s).</p>${tagsUI(c)}${isDev?`<div class='row'><label class='mut'>Date <input id='bd' type='date' value='${esc(c.date||'')}'></label></div>`:''}<div class='row'><input id='bw' placeholder='Ton prénom (obligatoire)' autocomplete='off' maxlength='30' value='${esc(c.by||'')}'><input id='bn' placeholder='Nom du bloc (facultatif)' value='${esc(c.name)}'><button class='yb' data-a='save'>${c.id?'Enregistrer les modifications':'Enregistrer'}</button><button data-a='cancel'>Annuler</button></div></div>`;
 }
 function vEdit(){
   const s=S.find(x=>x.id===v.sid);if(!s||!isDev){v.n='home';return vHome()}
@@ -168,7 +170,8 @@ function render(){
   if(!ready){a.innerHTML=`<p class='mut pd'>${esc(TT)}</p>`;return}
   if(document.activeElement&&['bn','bw','tn','bd'].includes(document.activeElement.id))return;
   a.innerHTML={home:vHome,prob:vProb,create:vCreate,edit:vEdit}[v.n]();
-  $('#ti').textContent=TT;$('#mn').hidden=v.n==='home';
+  const ti=$('#ti');if(v.n==='home'){ti.className='brand';ti.innerHTML='<span>air</span>Block'}else{ti.className='';ti.textContent=TT}
+  $('#mn').hidden=v.n==='home';
 }
 
 async function img(f){const b=await createImageBitmap(f),k=Math.min(1,1800/b.width),c=document.createElement('canvas');c.width=b.width*k;c.height=b.height*k;c.getContext('2d').drawImage(b,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',.85))}
@@ -256,8 +259,8 @@ const A={
   cf:e=>{const c=e.dataset.c;v.cf=v.cf===c?null:c},
   reset:()=>{v.cf=null;v.sn=null;v.tf=null},
   open:e=>{v.pid=e.dataset.p;v.n='prob'},
-  new:()=>{v.sid=cur().id;v.tool='hand';v.cr={sel:{},name:'',by:'',tags:[],color:'jaune',date:iso(new Date())};v.n='create'},
-  ebloc:e=>{const p=P.find(x=>x.id===e.dataset.p);v.sid=p.sid;v.tool='hand';v.cr={id:p.id,sel:{...(p.holds||{})},name:nm(p),by:p.by||'',tags:[...(p.tags||[])],color:p.color||'jaune',date:iso(new Date(p.t)),t0:p.t};v.n='create'},
+  new:()=>{v.sid=cur().id;v.tool='hand';v.cr={sel:{},name:'',by:'',tags:[],lo:{},color:'jaune',date:iso(new Date())};v.n='create'},
+  ebloc:e=>{const p=P.find(x=>x.id===e.dataset.p);v.sid=p.sid;v.tool='hand';v.cr={id:p.id,sel:{...(p.holds||{})},name:nm(p),by:p.by||'',tags:[...(p.tags||[])],lo:{...(p.lo||{})},color:p.color||'jaune',date:iso(new Date(p.t)),t0:p.t};v.n='create'},
   cancel:()=>{const id=v.cr&&v.cr.id;v.cr=null;v.n=id?'prob':'home'},
   tg:e=>{const t=e.dataset.t,a=v.cr.tags;v.cr.tags=a.includes(t)?a.filter(x=>x!==t):[...a,t]},
   addtg:()=>{const t=normTag($('#tn').value);if(t&&!v.cr.tags.includes(t)&&v.cr.tags.length<8)v.cr.tags.push(t)},
@@ -271,7 +274,7 @@ const A={
     const pend=normTag($('#tn')&&$('#tn').value);if(pend&&!c.tags.includes(pend))c.tags.push(pend);
     let t=c.t0||Date.now();
     if(isDev&&c.date){const nd=new Date(c.date+'T12:00:00');if(!isNaN(nd)&&(!c.t0||iso(new Date(c.t0))!==c.date))t=nd.getTime()}
-    const base={name:c.name.trim(),color:c.color,by:c.by.trim().slice(0,30),holds:c.sel,tags:c.tags,t};
+    const base={name:c.name.trim(),color:c.color,by:c.by.trim().slice(0,30),holds:c.sel,tags:c.tags,lo:c.lo||{},t};
     if(c.id){v.cr=null;v.n='prob';await db.doc('problems/'+c.id).update(base);return}
     v.cr=null;v.n='home';await db.collection('problems').add({sid:v.sid,uid:me.id,...base})},
   delP:async e=>{await db.doc('problems/'+e.dataset.p).delete();v.n='home';v.pid=null},
@@ -307,6 +310,11 @@ document.addEventListener('click',async e=>{
   if(A[a]){await A[a](t);render()}
 });
 $('#mn').addEventListener('click',()=>{if(!ready)return;A.back();render()});
+let bd=null;
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('.rb.mv');if(!b||!v.cr)return;bd={b,r:b.closest('.ph').getBoundingClientRect(),id:b.dataset.hid};try{b.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
+document.addEventListener('pointermove',e=>{if(!bd)return;bd.x=Math.max(0,Math.min(100,(e.clientX-bd.r.left)/bd.r.width*100));bd.y=Math.max(0,Math.min(100,(e.clientY-bd.r.top)/bd.r.height*100));
+  Object.assign(bd.b.style,{left:bd.x+'%',top:bd.y+'%',transform:'translate(-50%,-50%)'})});
+document.addEventListener('pointerup',()=>{if(!bd)return;const d=bd;bd=null;if(d.x!=null&&v.cr){(v.cr.lo=v.cr.lo||{})[d.id]=[+d.x.toFixed(1),+d.y.toFixed(1)]}render()});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='tn'&&v.cr){e.preventDefault();A.addtg();render();const t=$('#tn');if(t)t.focus()}});
 document.addEventListener('input',e=>{
   if(e.target.id==='sens')v.sens=+e.target.value;if(e.target.id==='tol')v.tol=+e.target.value;
