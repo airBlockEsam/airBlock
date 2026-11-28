@@ -31,7 +31,7 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 .lh{padding:8px 18px;color:#8a8a8a;display:flex;justify-content:space-between;gap:8px}.gh{padding:10px 18px 4px;color:#555;font-weight:500;font-size:14px}.lh select{border:0;background:none;color:#8a8a8a;font-size:18px;padding:0}
 .it{display:flex;align-items:center;gap:10px;background:#fff;padding:8px 14px;border-bottom:1px solid var(--bd);cursor:pointer}
 .sn{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:700;color:#7f35d4;width:16px}
-.th{position:relative;width:62px;height:62px;border-radius:50%;border:5px solid #999;overflow:hidden;flex:none;background:#ccc}
+.th{display:block;position:relative;width:62px;height:62px;border-radius:50%;border:5px solid #999;overflow:hidden;flex:none;background:#ccc}
 .th img{position:absolute}.mt{flex:1;min-width:0;font-weight:500}.ck{color:#bbb;font-size:20px;font-weight:700}.ck.me{color:#2e9a3f}
 .pw{position:relative}.ph{position:relative;line-height:0;touch-action:manipulation;background:#777;user-select:none}
 .ph img{width:100%;display:block;-webkit-user-drag:none}.ph.no{padding:40px;text-align:center;color:#fff;line-height:1.4}
@@ -53,7 +53,7 @@ input,select{padding:9px;border:1px solid var(--bd);border-radius:6px;background
 .tgc{display:flex;flex-wrap:wrap;margin:6px 0}.tg{border-radius:99px;padding:5px 12px;font-size:14px;box-shadow:inset 0 0 0 1px #c8c8c8;margin:0 6px 6px 0}.tg.on{background:#007BC4;color:#fff;box-shadow:none;outline:0}
 .tf{border:0;background:none;font-weight:700;letter-spacing:.5px;color:#007BC4;max-width:55%;padding:10px 0;text-align:right}
 .tgf{flex:1;display:flex;flex-wrap:wrap;gap:4px 10px;color:#007BC4}
-.ph.sd .bg{filter:saturate(.4)}.ph img.fg{position:absolute;inset:0;height:100%;clip-path:url(#cp);pointer-events:none}.tw{position:relative;flex:none;display:block}.nw{position:absolute;right:-9px;top:-4px;background:#e11d48;color:#fff;font:700 10px/1 system-ui;letter-spacing:.3px;padding:3px 6px;border-radius:9px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.ph.sd .bg{filter:saturate(.4)}.ph img.fg{position:absolute;inset:0;height:100%;clip-path:url(#cp);pointer-events:none}.tw{position:relative;flex:none;display:block}.nw{position:absolute;right:-15px;top:-13px;width:40px;height:40px;transform:rotate(12deg);filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));pointer-events:none}.nw text{font:800 10.5px system-ui,sans-serif;fill:#fff;paint-order:stroke;stroke:#a0005f;stroke-width:1.1px;stroke-linejoin:round}
 .cd.info{padding:4px 18px}.ir{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-top:1px solid #eee}.ir:first-child{border-top:0}.ir svg{color:#007BC4;flex:none;margin-top:2px}.il{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}.iv{font-size:16px}.tg2{display:inline-block;color:#007BC4;margin-right:6px}
 .bt2{display:flex;gap:18px;align-items:center;padding:14px 16px;font-weight:500}
 </style></head>
@@ -91,7 +91,8 @@ function plan(sel,mini,hl){
     return `<g ${mini?'':`data-a='sec'`} data-s='${k}'>${mini?'':`<path d='${d}' fill='none' stroke='transparent' stroke-width='120'/>`}<path d='${d}' fill='none' stroke='${c}' stroke-width='${mini?60:30}' pointer-events='none'/>${mini?'':`<text x='${LP[i][0]}' y='${LP[i][1]}' text-anchor='middle' font-size='54' fill='#777' pointer-events='none'>${k}</text>`}</g>`}).join('');
   return `<svg ${mini?`class='mp'`:`id='plan' class='pl'`} viewBox='${mini?'0 0 2070 480':'40 -15 1990 495'}' role='img' aria-label='Plan de la salle'>${L}</svg>`;
 }
-function thumb(s,p){return `<span class='tw'>${thumb0(s,p)}${Date.now()-p.t<6048e5?`<b class='nw'>NEW</b>`:''}</span>`}
+const STAR=Array.from({length:32},(_,i)=>{const a=i*Math.PI/16,r=i%2?15.5:20;return (20+r*Math.cos(a)).toFixed(1)+','+(20+r*Math.sin(a)).toFixed(1)}).join(' ');
+function thumb(s,p){return `<span class='tw'>${thumb0(s,p)}${Date.now()-p.t<6048e5?`<svg class='nw' viewBox='0 0 40 40' role='img' aria-label='Nouveau'><polygon points='${STAR}' fill='#ff1fa5'/><text x='20' y='23.6' text-anchor='middle'>NEW</text></svg>`:''}</span>`}
 function thumb0(s,p){
   const hs=p.holds||{},k=Object.keys(hs),st=k.find(i=>hs[i]==='start')||k[0],h=H.find(x=>x.id===st);
   return `<span class='th' style='border-color:${p.color==='blanc'?'#fff':rc(p.color)};box-shadow:0 0 0 1px #999'>${s&&s.img&&h?`<img src='${esc(s.img)}' alt='' style='left:50%;top:50%;width:420%;transform:translate(-${h.x}%,-${h.y}%)'>`:''}</span>`;
